@@ -39,34 +39,46 @@ class geoplot:
                 plt.plot([F, F_p], [G, G_p], **self.pltparams)
             plt.plot([F_p, F_p+2*H_p],[G_p, G_p+2*I_p], **self.pltparams) #Plot direction of ray after stop. 
     
-#     def clip_lens(self, idx):
-#         """ Clips points ouside of a lens intersection point. """
-#         surf1, surf2 = self.surfaces[idx], self.surfaces[idx+1]
-#         d = sqrt(np.sum(np.square(surf1.P - surf2.P)))
-#         points1, points2 = np.nan_to_num(self.surfpoints[idx]), np.nan_to_num(self.surfpoints[idx+1])
-#         s1_dis, s2_dis = sqrt(np.sum(np.square(points1), axis=1)), sqrt(np.sum(np.square(points2), axis=1))
-#         return (s2_dis - s1_dis) >= 1e-4
+    def clip_lens(self, idx):
+        """ Clips points ouside of a lens intersection point. """
+        surf1, surf2 = self.surfaces[idx], self.surfaces[idx+1]
+        d = sqrt(np.sum(np.square(surf1.P - surf2.P)))
+        points1, points2 = np.nan_to_num(self.surfpoints[idx]), np.nan_to_num(self.surfpoints[idx+1])
+        points2[:,2] += d
+        clipped_idx = (points2[:,2] - points1[:,2]) <= 0.
+        self.surfpoints[idx][:,2][clipped_idx] = np.nan
+        self.surfpoints[idx+1][:,2][clipped_idx] = np.nan   
             
     def plot_surfaces(self, axes):
         """ Plots 2d surface cross sections. Takes list axes to specify axes (0, 1, 2) to plot. """
         for idx, surf in enumerate(self.surfaces):
-#             if (idx+1 < len(self.surfaces) and
-#                 self.surfaces[idx].inter == 'refraction' and self.surfaces[idx+1].inter == 'refraction'):
-#                 #Clip surface points past lens intersection
-#                 clipped_idx = self.clip_lens(idx)
-#                 points = self.surfpoints[idx][clipped_idx]
-#                 print(points[:10000])
-#                 #self.surfpoints[idx][:,2] *= clipped_idx
-#                 #self.surfpoints[idx+1][:,2] *= clipped_idx      
-            if np.any(np.mod(surf.D/pi, 1) != 0) and surf.shape == 'plane' and surf.r2 == 0:
-                with np.errstate(invalid='ignore'):
-                    cross_idx = abs(self.surfpoints[idx][:,axes[1]]) == 0 #Find cross section points.
-            else:
-                with np.errstate(invalid='ignore'):
-                    cross_idx = abs(self.surfpoints[idx][:,1-axes[0]]) == 0 #Find cross section points.
+            lens_condition = (idx+1 < len(self.surfaces) and
+                                self.surfaces[idx].inter == self.surfaces[idx+1].inter == 'refraction')
+            if lens_condition:
+                self.clip_lens(idx) 
+            with np.errstate(invalid='ignore'):
+                if np.any(np.mod(surf.D/pi, 1) != 0) and surf.shape == 'plane' and surf.r2 == 0:
+                        cross_idx = abs(self.surfpoints[idx][:,axes[1]]) == 0 #Find cross section points.
+                else:
+                        cross_idx = abs(self.surfpoints[idx][:,1-axes[0]]) == 0 #Find cross section points.
             cross_points = self.surfpoints[idx][cross_idx]
             points = lab_frame(surf.R, surf, cross_points) #Transform to lab frame.
             F, G = points[:,axes[0]], points[:,axes[1]]
+            if lens_condition: #Store first and last point to connect surfaces.
+                self.start = np.array([F[0], G[0]])
+                self.end = np.array([F[-1], G[-1]])
+            #Connect the surfaces in a lens
+            if self.surfaces[idx].inter == self.surfaces[idx-1].inter == 'refraction':
+                start = np.array([F[0], G[0]])
+                end = np.array([F[-1], G[-1]])
+                dis1 = np.sqrt(np.sum(np.square(self.start - start)))
+                dis2 = np.sqrt(np.sum(np.square(self.start - end)))
+                if dis1 <= dis2:
+                    idx = [0,-1]
+                else:
+                    idx = [-1,0]
+                F = np.insert(F, idx, [self.start[0], self.end[0]])
+                G = np.insert(G, idx, [self.start[1], self.end[1]])
             plt.plot(F, G, 'k')
     
     def plotxz(self, both=None):
