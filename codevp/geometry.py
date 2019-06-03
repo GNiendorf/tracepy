@@ -81,33 +81,3 @@ class geometry:
         function[nan_idx] = np.nan
         function[~nan_idx] = self.c*pow(rho, 2)/(1 + pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5))
         return function 
-    
-#     def find_lens_radius(self, surf2, d):
-#         """ Return the intersection radius between two surfaces.
-#             This currently only works for rotationally symetric surfaces.
-#             d is the vertex separation between the surfaces in the obj. frame.
-#             surface 2 is defined as the surface in front of surface 1.
-#         """
-#         r_0 = sqrt(abs(2*d / (self.c - surf2.c))) #Exact radius for kappa1=kappa2=0
-#         error = 1. #Initial error.
-#         r_j = [r_0, r_0]
-#         n_iter = 0
-#         n_max = 1e3 #Max iterations allowed.
-#         #Need to get z from each surface for radius point (r,0)
-#         while error > 1e-3 and n_iter < n_max:
-#             func1, normal1, succ1 = self.get_surface([r, 0, d/2.]) #'normal' is the surface direction numbers.
-#             deriv1 = np.dot(normal1, self.D)
-#             if deriv1 == 0:
-#                 succ = False
-#                 break
-#             func2, normal2, succ2 = surf2.get_surface([r, 0, -d/2.]) #'normal' is the surface direction numbers.
-#             deriv2 = np.dot(normal2, self.D)
-#             if deriv2 == 0:
-#                 succ = False
-#                 break            
-            
-            
-#             r_j = r_j[1], r_j[1]-func/deriv #Newton-raphson method
-#             error = abs(func) #Error is how far f(X, Y, Z) is from 0.
-#             n_iter += 1 
-#         return r_j[1]

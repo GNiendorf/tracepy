@@ -51,11 +51,13 @@ class geoplot:
             
     def plot_surfaces(self, axes):
         """ Plots 2d surface cross sections. Takes list axes to specify axes (0, 1, 2) to plot. """
+        #Error: Only works for one lens right now.
+        self.lens_check = 0
         for idx, surf in enumerate(self.surfaces):
             lens_condition = (idx+1 < len(self.surfaces) and
                                 self.surfaces[idx].inter == self.surfaces[idx+1].inter == 'refraction')
             if lens_condition:
-                self.clip_lens(idx) 
+                self.clip_lens(idx)
             with np.errstate(invalid='ignore'):
                 if np.any(np.mod(surf.D/pi, 1) != 0) and surf.shape == 'plane' and surf.r2 == 0:
                         cross_idx = abs(self.surfpoints[idx][:,axes[1]]) == 0 #Find cross section points.
@@ -64,21 +66,23 @@ class geoplot:
             cross_points = self.surfpoints[idx][cross_idx]
             points = lab_frame(surf.R, surf, cross_points) #Transform to lab frame.
             F, G = points[:,axes[0]], points[:,axes[1]]
+            #Connect the surfaces in a lens
+            if self.surfaces[idx].inter == self.surfaces[idx-1].inter == 'refraction':
+                self.lens_check = 1 - self.lens_check
+                if self.lens_check == 1:
+                    start = np.array([F[0], G[0]])
+                    end = np.array([F[-1], G[-1]])
+                    dis1 = np.sqrt(np.sum(np.square(self.start - start)))
+                    dis2 = np.sqrt(np.sum(np.square(self.start - end)))
+                    if dis1 <= dis2:
+                        idx = [0,-1]
+                    else:
+                        idx = [-1,0]
+                    F = np.insert(F, idx, [self.start[0], self.end[0]])
+                    G = np.insert(G, idx, [self.start[1], self.end[1]])
             if lens_condition: #Store first and last point to connect surfaces.
                 self.start = np.array([F[0], G[0]])
                 self.end = np.array([F[-1], G[-1]])
-            #Connect the surfaces in a lens
-            if self.surfaces[idx].inter == self.surfaces[idx-1].inter == 'refraction':
-                start = np.array([F[0], G[0]])
-                end = np.array([F[-1], G[-1]])
-                dis1 = np.sqrt(np.sum(np.square(self.start - start)))
-                dis2 = np.sqrt(np.sum(np.square(self.start - end)))
-                if dis1 <= dis2:
-                    idx = [0,-1]
-                else:
-                    idx = [-1,0]
-                F = np.insert(F, idx, [self.start[0], self.end[0]])
-                G = np.insert(G, idx, [self.start[1], self.end[1]])
             plt.plot(F, G, 'k')
     
     def plotxz(self, both=None):
