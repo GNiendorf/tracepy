@@ -21,7 +21,9 @@ class optplot:
             raise Exception("No rays survived.")
         stop = self.geo[-1]
         points_obj = transform(stop.R, stop, points) # Get X,Y points in obj. reference frame. - 
-        X, Y = points_obj[:,0], points_obj[:,1]      # Used for stops orientated in arbitrary direction.
+                                                     # Used for stops orientated in arbitrary direction.
+        points_obj = np.around(points_obj, 14) #Round arrays to upper bound on accuracy.            
+        X, Y = points_obj[:,0], points_obj[:,1]      
         rms = np.std(points_obj[:,[0,1]] - points_obj[:,[0,1]].mean(axis=0))
         plt.subplot(1,1,1, aspect='equal')
         plt.locator_params(axis='x', nbins=8)
