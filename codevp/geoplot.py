@@ -51,7 +51,6 @@ class geoplot:
             
     def plot_surfaces(self, axes):
         """ Plots 2d surface cross sections. Takes list axes to specify axes (0, 1, 2) to plot. """
-        #Error: Only works for one lens right now.
         self.lens_check = 0
         for idx, surf in enumerate(self.surfaces):
             lens_condition = (idx+1 < len(self.surfaces) and
