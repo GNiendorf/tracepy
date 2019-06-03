@@ -36,8 +36,8 @@ class geoplot:
                 F, G = ray.P_hist[idx][axes]
                 F_p, G_p = ray.P_hist[idx+1][axes]
                 H_p, I_p = ray.D_hist[idx+1][axes] #Alpha, beta, gamma rotations.
-                plt.plot([F, F_p], [G, G_p], **self.pltparams)
-            plt.plot([F_p, F_p+2*H_p],[G_p, G_p+2*I_p], **self.pltparams) #Plot direction of ray after stop. 
+                plt.plot([G, G_p], [F, F_p], **self.pltparams)
+            plt.plot([G_p, G_p+2*I_p],[F_p, F_p+2*H_p], **self.pltparams) #Plot direction of ray after stop. 
     
     def clip_lens(self, idx):
         """ Clips points ouside of a lens intersection point. """
@@ -52,6 +52,7 @@ class geoplot:
     def plot_surfaces(self, axes):
         """ Plots 2d surface cross sections. Takes list axes to specify axes (0, 1, 2) to plot. """
         self.lens_check = 0
+        self.start = None
         for idx, surf in enumerate(self.surfaces):
             lens_condition = (idx+1 < len(self.surfaces) and
                                 self.surfaces[idx].inter == self.surfaces[idx+1].inter == 'refraction')
@@ -66,7 +67,7 @@ class geoplot:
             points = lab_frame(surf.R, surf, cross_points) #Transform to lab frame.
             F, G = points[:,axes[0]], points[:,axes[1]]
             #Connect the surfaces in a lens
-            if self.surfaces[idx].inter == self.surfaces[idx-1].inter == 'refraction':
+            if self.surfaces[idx].inter == self.surfaces[idx-1].inter == 'refraction' and self.start is not None:
                 self.lens_check = 1 - self.lens_check
                 if self.lens_check == 1:
                     start = np.array([F[0], G[0]])
@@ -82,7 +83,7 @@ class geoplot:
             if lens_condition: #Store first and last point to connect surfaces.
                 self.start = np.array([F[0], G[0]])
                 self.end = np.array([F[-1], G[-1]])
-            plt.plot(F, G, 'k')
+            plt.plot(G, F, 'k')
     
     def plotxz(self, both=None):
         """ Plots the xz coordinates of all rays and surface cross sections. """
@@ -90,8 +91,8 @@ class geoplot:
             plt.subplot(1,1,1, aspect='equal') #Keeps aspect ratio equal.
         self.plot_rays(axes = [0, 2])
         self.plot_surfaces(axes = [0,2])
-        plt.xlabel("X")
-        plt.ylabel("Z")
+        plt.xlabel("Z")
+        plt.ylabel("X")
         
     def plotyz(self, both=None):
         """ Plots the yz coordinates of all rays and surface cross sections. """
@@ -99,13 +100,13 @@ class geoplot:
             plt.subplot(1,1,1, aspect='equal') #Keeps aspect ratio equal.
         self.plot_rays(axes = [1, 2])
         self.plot_surfaces(axes = [1, 2])
-        plt.xlabel("Y")
-        plt.ylabel("Z")
+        plt.xlabel("Z")
+        plt.ylabel("Y")
         
     def plot2d(self):
         """ Plots both xz and yz side-by-side. """
-        plt.subplot(1,2,1, aspect='equal')
+        plt.subplot(2,1,1, aspect='equal')
         self.plotxz(both=True)
-        plt.subplot(1,2,2, aspect='equal') 
+        plt.subplot(2,1,2, aspect='equal') 
         self.plotyz(both=True)
         plt.tight_layout()
