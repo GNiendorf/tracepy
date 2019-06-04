@@ -37,7 +37,7 @@ class geoplot:
                 F_p, G_p = ray.P_hist[idx+1][axes]
                 H_p, I_p = ray.D_hist[idx+1][axes] #Alpha, beta, gamma rotations.
                 plt.plot([G, G_p], [F, F_p], **self.pltparams)
-            plt.plot([G_p, G_p+2*I_p],[F_p, F_p+2*H_p], **self.pltparams) #Plot direction of ray after stop. 
+            plt.plot([G_p, G_p+I_p],[F_p, F_p+H_p], **self.pltparams) #Plot direction of ray after stop. 
     
     def clip_lens(self, idx):
         """ Clips points ouside of a lens intersection point. """

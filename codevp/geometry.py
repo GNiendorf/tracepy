@@ -25,7 +25,11 @@ class geometry:
             raise Exception("Specify a radius for your plane.")
         elif self.shape=='rot_sym' and self.r==0:
             raise Exception("Specify radius for rotational surface.")
-        
+
+    def __getitem__(self, item):
+        """ Return attribute of geometry. """
+        return getattr(self, item)
+
     def get_surface(self, point, plot=None):
         """ Returns the function and derivitive of a surface. """
         if self.shape == 'plane':
