@@ -13,7 +13,7 @@ class optplot:
         self.geo_params = geo_params
         self.geo = [geometry(surf) for surf in self.geo_params]
         if self.rays is None: #Needs to be fixed for arbitrary initial direction.
-            self.rays = ray_plane(self.geo_params, [0., 0., 0.], self.geo[0]["r"], d=[0.,0.,1.], nrays=5000)
+            self.rays = ray_plane(self.geo_params, [0., 0., 0.], self.geo[0]["Diam"]/2., d=[0.,0.,1.], nrays=5000)
         self.startpoints = np.array([rayiter.P_hist[0] for rayiter in self.rays])
         self.endpoints = np.array([rayiter.P_hist[-1] for rayiter in self.rays if rayiter.P is not None])
         #Check if any rays survived.

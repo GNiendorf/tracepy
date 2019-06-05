@@ -19,7 +19,7 @@ class geoplot:
     def gen_points(self):
         """ Generates the mesh points for each surface in the obj frame. """
         for surface in self.surfaces:
-            bound = 10 if surface.r==0 else surface.r
+            bound = surface.Diam/2.
             linspace = np.linspace(-bound, bound, 200) #General mesh points.
             x_mesh, y_mesh = np.meshgrid(linspace, -linspace)
             x_points = np.append(x_mesh, [linspace, np.zeros(200)]) #Used for cross sections.
@@ -59,7 +59,7 @@ class geoplot:
             if lens_condition:
                 self.clip_lens(idx)
             with np.errstate(invalid='ignore'):
-                if np.any(np.mod(surf.D/pi, 1) != 0) and surf.shape == 'plane' and surf.r2 == 0:
+                if np.any(np.mod(surf.D/pi, 1) != 0) and surf.shape == 'plane' and surf.diam == 0:
                         cross_idx = abs(self.surfpoints[idx][:,axes[1]]) == 0 #Find cross section points.
                 else:
                         cross_idx = abs(self.surfpoints[idx][:,1-axes[0]]) == 0 #Find cross section points.
