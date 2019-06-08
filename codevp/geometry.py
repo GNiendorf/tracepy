@@ -73,7 +73,7 @@ class geometry:
         X, Y = point[:,0], point[:,1]
         function = np.zeros(len(point)) #All points in plane obj frame are Z=0.
         rho = sqrt(pow(X,2) + pow(Y,2))
-        function[np.array(rho > self.Diam/2.) + np.array(rho < self.diam/2.)] = np.nan #All points outside of plane are nan.
+        function[(rho > self.Diam/2.) + (rho < self.diam/2.)] = np.nan #All points outside of plane are nan.
         return function      
     
     def conics_plot(self, point):
