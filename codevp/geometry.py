@@ -10,9 +10,9 @@ class geometry:
         self.D = np.array(params['D']) #Rotation angles of surface?
         self.shape = params['shape'] #Shape of surface e.g. conic, plane
         self.inter = params['inter'] #Interaction with surface
+        self.Diam = params['Diam'] #Outer radius
         self.N = params.get('N', 1.) #Index of refraction     
         self.kappa = params.get('kappa', None) #Specifies type of conic
-        self.Diam = params.get('Diam', None) #Outer radius
         self.diam = params.get('diam', 0.) #Inner radius
         self.c = params.get('c', None) #Vertex curvature
         self.name = params.get('name', None) #Name of surface (optional)
@@ -25,10 +25,6 @@ class geometry:
             raise Exception("Specify a vertex curvature c.")
         if self.shape=='conic' and self.kappa is None:
             raise Exception("Specify a kappa for this conic.")
-        if self.shape=='plane' and self.Diam is None:
-            raise Exception("Specify a diameter for this plane.")
-        if self.shape=='conic' and self.Diam is None:
-            raise Exception("Specify a diameter for this conic.")
 
     def __getitem__(self, item):
         """ Return attribute of geometry. """
