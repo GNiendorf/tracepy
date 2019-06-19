@@ -25,7 +25,7 @@ class geoplot:
             x_points = np.append(x_mesh, [linspace, np.zeros(200)]) #Used for cross sections.
             y_points = np.append(y_mesh, [np.zeros(200), linspace]) #Used for cross sections.
             meshpoints_2d = np.vstack((x_points.ravel(), y_points.ravel())).T
-            z_points = surface.get_surface(meshpoints_2d, plot=True) #Function values in obj. frame.
+            z_points = surface.get_surface_plot(meshpoints_2d) #Function values in obj. frame.
             meshpoints = np.vstack((x_points.ravel(), y_points.ravel(), z_points)).T
             self.surfpoints.append(meshpoints) #Append to surfpoints which holds all surfaces' points.
     
@@ -59,7 +59,7 @@ class geoplot:
             if lens_condition:
                 self.clip_lens(idx)
             with np.errstate(invalid='ignore'):
-                if np.any(np.mod(surf.D/pi, 1) != 0) and surf.shape == 'plane' and surf.diam == 0:
+                if np.any(np.mod(surf.D/pi, 1) != 0) and surf.c == 0 and surf.diam == 0:
                         cross_idx = abs(self.surfpoints[idx][:,axes[1]]) == 0 #Find cross section points.
                 else:
                         cross_idx = abs(self.surfpoints[idx][:,1-axes[0]]) == 0 #Find cross section points.

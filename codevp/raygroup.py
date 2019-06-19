@@ -1,5 +1,3 @@
-import types
-
 import numpy as np
 from numpy import cos, sin, pi, sqrt
 
@@ -13,7 +11,7 @@ def ray_plane(geo_params, pos, radius, d, ang=None, nrays=1000):
     x_points, y_points = np.meshgrid(x_mesh, y_mesh)
     xs, ys = x_points.ravel(), y_points.ravel()
     dis = sqrt(pow(xs,2) + pow(ys, 2))
-    if isinstance(pos, types.ListType):
+    if isinstance(pos, list):
         x_circ, y_circ = xs[dis < radius] + pos[0], ys[dis < radius] + pos[1]
         z_circ = [pos[2]]*len(x_circ) #To-do: Should transform for d
     else:
@@ -33,7 +31,7 @@ def ray_fan(geo_params, pos, radius, d, ang=None, nrays=1000):
     D_arr = 10*np.random.rand(nrays, 3)
     D_arr[:,1]*=np.random.uniform(-1,1,nrays)
     D_arr[:,0]*=np.random.uniform(-1,1,nrays)
-    if isinstance(pos, types.ListType):
+    if isinstance(pos, list):
         P_arr = [pos] * (2*nrays)
     else:
         P_arr = np.zeros((2*nrays,3))
