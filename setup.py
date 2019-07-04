@@ -11,5 +11,6 @@ setup(name='codevp',
       install_requires=[
           'numpy',
           'matplotlib',
+          'pandas',
       ],
       )
