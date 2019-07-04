@@ -28,7 +28,7 @@ class optplot:
         X, Y = points_obj[:,0], points_obj[:,1]    
         rms = np.std(points_obj[:,[0,1]] - points_obj[:,[0,1]].mean(axis=0))
         if optimizer:  
-        	return rms
+            return rms
         plt.subplot(1,1,1, aspect='equal')
         plt.locator_params(axis='x', nbins=8)
         plt.ticklabel_format(style='sci', axis='both', scilimits=(0,0))
