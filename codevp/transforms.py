@@ -19,7 +19,8 @@ def gen_rot(ang):
     return R
 
 def transform(R, surface, points, D=None):
-    """ Inputs of points and D must both be 2d arrays 
+    """ 
+        Inputs of points and D must both be 2d arrays 
         Returns both points and D in transformed frame.
         Arrays are flattened if they have one row. 
     """
@@ -35,7 +36,8 @@ def transform(R, surface, points, D=None):
     return tran_points
     
 def lab_frame(R, surface, points, D=None):
-    """ Inputs of points and D must both be 2d arrays 
+    """ 
+        Inputs of points and D must both be 2d arrays 
         Returns both points and D in lab frame.
         Arrays are flattened if they have one row. 
     """

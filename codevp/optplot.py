@@ -20,13 +20,15 @@ class optplot:
         if self.endpoints.size == 0: #No rays propagated through entire system.
             raise Exception("No rays survived.")
         
-    def spotdiagram(self, pltparams = {'color': 'red'}):
+    def spotdiagram(self, pltparams = {'color': 'red'}, optimizer=False):
         """ Plots the transformed intersection points of rays on the stop surface. """
         stop = self.geo[-1]
         points_obj = transform(stop.R, stop, self.endpoints) # Get X,Y points in obj. reference frame.
         points_obj = np.around(points_obj, 14) #Round arrays to upper bound on accuracy.            
-        X, Y = points_obj[:,0], points_obj[:,1]      
+        X, Y = points_obj[:,0], points_obj[:,1]    
         rms = np.std(points_obj[:,[0,1]] - points_obj[:,[0,1]].mean(axis=0))
+        if optimizer:  
+        	return rms
         plt.subplot(1,1,1, aspect='equal')
         plt.locator_params(axis='x', nbins=8)
         plt.ticklabel_format(style='sci', axis='both', scilimits=(0,0))

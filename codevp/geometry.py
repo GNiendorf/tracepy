@@ -16,22 +16,25 @@ class geometry:
         self.c = params.get('c', 0.) #Vertex curvature. Default to plane.
         self.name = params.get('name', None) #Name of surface (optional)
         self.R = gen_rot(self.D) #Rotation matrix for surface
-        if isinstance(self.P, float) or isinstance(self.P, int): #Allow on axis integer for P.
-            self.P = np.array([0., 0., self.P])
-        else:
-            self.P = np.array(self.P)
-        if self.c != 0 and self.kappa is None:
-            raise Exception("Specify a kappa for this conic.")
-        if self.c != 0 and self.kappa>0:
-            print("Warning: c value is not used when kappa>0")
-        if self.c == 0 and self.kappa is None: #Used for planes
-            self.kappa = 1.
-        if self.c != 0 and self.kappa>0:
-            self.c = sqrt(1/(self.kappa*pow(self.Diam/2.,2)))
+        self.check_params()
 
     def __getitem__(self, item):
         """ Return attribute of geometry. """
         return getattr(self, item)
+
+    def check_params(self):
+        if isinstance(self.P, float) or isinstance(self.P, int): #Allow on axis integer for P.
+            self.P = np.array([0., 0., self.P])
+        else:
+            self.P = np.array(self.P)
+        if self.c != 0:
+            if self.kappa is None:
+                raise Exception("Specify a kappa for this conic.")
+            elif self.kappa>0:
+                print("Warning: Specified c value is not used when kappa>0")  
+                self.c = sqrt(1/(self.kappa*pow(self.Diam/2.,2))) 
+        elif self.c == 0 and self.kappa is None:
+            self.kappa = 1. #Used for planes, does not affect calculations.       
 
     def get_surface(self, point):
         """ Returns the function and derivitive of a surface for a point. """
@@ -45,12 +48,12 @@ class geometry:
         """ Returns function and derivitive for conics and sphere surfaces. """
         X,Y,Z = point
         rho = sqrt(pow(X,2) + pow(Y, 2))
-        if rho > self.Diam/2. or rho < self.diam/2.: #Not on surface, success=False.
-            return 0., np.ones(3), False
+        if rho > self.Diam/2. or rho < self.diam/2.: #Not on surface
+            raise Exception()
         function = Z - self.c*pow(rho, 2)/(1 + pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5)) #Conic equation.
         E = self.c / pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5) #See Spencer, Murty section on rotational surfaces.
         derivitive = [-X*E, -Y*E, 1.]
-        return function, derivitive, True
+        return function, derivitive
 
     def conics_plot(self, point):
         """ Returns Z value for an array of points for plotting conics. """

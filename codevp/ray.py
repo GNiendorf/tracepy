@@ -28,16 +28,17 @@ class ray:
         n_iter = 0
         n_max = 1e4 #Max iterations allowed.
         while error > 1e-6 and n_iter < n_max:
-            X, Y, Z = [X_1, Y_1, 0.] + np.dot(self.D, s_j[0])
-            func, normal, succ = surface.get_surface([X, Y, Z]) #'normal' is the surface direction numbers.
-            deriv = np.dot(normal, self.D)
-            if deriv == 0:
-                succ = False
-                break
-            s_j = s_j[1], s_j[1]-func/deriv #Newton-raphson method
+            X, Y, Z = [X_1, Y_1, 0.]+np.dot(self.D, s_j[0])
+            try:
+                func, normal= surface.get_surface([X, Y, Z]) #'normal' is the surface direction numbers.
+                deriv = np.dot(normal, self.D)
+                s_j = s_j[1], s_j[1]-func/deriv #Newton-raphson method
+            except:
+                self.P = None
+                return None
             error = abs(func) #Error is how far f(X, Y, Z) is from 0.
             n_iter += 1 
-        if not succ or n_iter == n_max or s_0+s_j[0] < 0 or np.dot(([X, Y, Z] - self.P), self.D) < 0.:
+        if n_iter == n_max or s_0+s_j[0] < 0 or np.dot(([X, Y, Z]-self.P), self.D) < 0.:
             self.P = None
         else:
             self.normal = normal
