@@ -23,6 +23,7 @@ class geometry:
         return getattr(self, item)
 
     def check_params(self):
+        """ Check that required parameters are given and update needed parameters. """
         if isinstance(self.P, float) or isinstance(self.P, int): #Allow on axis integer for P.
             self.P = np.array([0., 0., self.P])
         else:
