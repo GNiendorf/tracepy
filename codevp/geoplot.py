@@ -55,7 +55,7 @@ class geoplot:
         self.start = None
         for idx, surf in enumerate(self.surfaces):
             lens_condition = (idx+1 < len(self.surfaces) and
-                                self.surfaces[idx].inter == self.surfaces[idx+1].inter == 'refraction')
+                                self.surfaces[idx].action == self.surfaces[idx+1].action == 'refraction')
             if lens_condition:
                 self.clip_lens(idx)
             with np.errstate(invalid='ignore'):
@@ -67,7 +67,7 @@ class geoplot:
             points = lab_frame(surf.R, surf, cross_points) #Transform to lab frame.
             F, G = points[:,axes[0]], points[:,axes[1]]
             #Connect the surfaces in a lens
-            if self.surfaces[idx].inter == self.surfaces[idx-1].inter == 'refraction' and self.start is not None:
+            if self.surfaces[idx].action == self.surfaces[idx-1].action == 'refraction' and self.start is not None:
                 self.lens_check = 1 - self.lens_check
                 if self.lens_check == 1:
                     start = np.array([F[0], G[0]])

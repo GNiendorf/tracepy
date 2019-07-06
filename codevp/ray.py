@@ -97,7 +97,7 @@ class ray:
             self.find_intersection(surface)
             if self.P is None: #Results from failure to converge.
                 break
-            self.interact(surface, surface.inter)
+            self.interact(surface, surface.action)
             if self.P is None: #Results from too many iterations.
                 break
             self.ray_lab_frame(surface)

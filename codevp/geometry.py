@@ -8,7 +8,7 @@ class geometry:
     def __init__(self, params):
         self.P = params['P'] #Position of surface
         self.D = np.array(params.get('D', [0., 0., 0.])) #Rotation angles
-        self.inter = params['action'] #Interaction with surface
+        self.action = params['action'] #Interaction with surface
         self.Diam = params['Diam'] #Outer diameter
         self.N = params.get('N', 1.) #Index of refraction     
         self.kappa = params.get('kappa', None) #Specifies type of conic
@@ -21,6 +21,10 @@ class geometry:
     def __getitem__(self, item):
         """ Return attribute of geometry. """
         return getattr(self, item)
+
+    def __setitem__(self, item, value):
+        """ Set attribute of geometry. """
+        return setattr(self, item, value)
 
     def check_params(self):
         """ Check that required parameters are given and update needed parameters. """
