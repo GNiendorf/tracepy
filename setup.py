@@ -1,13 +1,13 @@
 from setuptools import setup
 
-setup(name='codevp',
+setup(name='RayPy',
       version='0.1',
       description='Optical design software for python.',
-      url='http://github.com/GNiendorf/codevp',
+      url='http://github.com/GNiendorf/RayPy',
       author='Gavin Niendorf',
       author_email='gavinniendorf@gmail.com',
       license='MIT',
-      packages=['codevp'],
+      packages=['RayPy'],
       install_requires=[
           'numpy',
           'matplotlib',
