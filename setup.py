@@ -12,5 +12,7 @@ setup(name='codevp',
           'numpy',
           'matplotlib',
           'pandas',
+          'scipy',
+          'scikit-learn',
       ],
       )
