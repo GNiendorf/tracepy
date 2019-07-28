@@ -8,7 +8,7 @@ TracePy is a sequential ray tracing package written in Python for designing opti
 To use TracePy I suggest cloning the repository and using the command "pip3 install ." in the downloaded directory. You can also download TracePy directly through pypi, but it is likely out of date since this software is in active development and features are being frequently added. 
 
 ```
-pip install tracepy
+pip3 install tracepy
 ```
 
 ## Examples
