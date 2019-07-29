@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/GNiendorf/tracepy.svg?branch=master)](https://travis-ci.org/GNiendorf/tracepy)
+
 ## tracepy
 Ray Tracing and Optical Design in Python
 
