@@ -23,4 +23,4 @@ To get started using the software, I suggest looking at the examples provided in
 
 ## Contributing
 
-Contact me at gavinniendorf@gmail.com to get involved in TracePy's development or for questions on how to use it.
+I would suggest reading Spencer and Murty's paper, ["General Ray-Tracing Procedure"](https://www.osapublishing.org/josa/viewmedia.cfm?uri=josa-52-6-672&seq=0) for an overview of TracePy's algorithm. There are also several open issues that we welcome collaborators on. If you have any questions feel free to contact me at gavinniendorf@gmail.com.
