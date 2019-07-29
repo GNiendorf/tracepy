@@ -19,7 +19,7 @@ pip3 install tracepy
 
 ## Examples
 
-To get started using the software, I suggest looking at the examples provided in the example_projects, optimization_examples, and validation files. The UI for TracePy is most similar to BEAM4, and TracePy's ray tracing algorithm was recreated mostly from Spencer and Murty's iconic paper, "General Ray-Tracing Procedure". Some changes were made to Spencer's algorithm however, and the plotting and optimization software was developed independently by myself.
+To get started using the software, I suggest looking at the examples provided in the examples folder. The UI for TracePy is most similar to BEAM4, and TracePy's ray tracing algorithm was recreated mostly from Spencer and Murty's iconic paper, "General Ray-Tracing Procedure". Some changes were made to Spencer's algorithm however, and the plotting and optimization software was developed independently by myself.
 
 ## Contributing
 
