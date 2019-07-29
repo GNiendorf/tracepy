@@ -1,0 +1,10 @@
+[run]
+source = tracepy
+
+[report]
+exclude_lines =
+    # enable standard pragma
+    pragma: no cover
+
+    # ignore caught importerrors
+    except ImportError:
