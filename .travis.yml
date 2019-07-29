@@ -1,0 +1,19 @@
+language: python
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda3/bin:$PATH
+install:
+  - conda create -n tracepyci python=3.7 --yes
+  - source activate tracepy
+  - >-
+      conda install --yes
+      numpy>=1.15
+      scipy>=1.2
+      matplotlib>=3.0
+      scikit-learn
+      pandas
+  - pip install .
+notifications:
+  email: false
