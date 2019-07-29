@@ -16,8 +16,11 @@ install:
       pandas
       pytest=4.2.1
       pytest-cov=2.6.1
+      coveralls=1.5.1
   - pip install .
 script:
   - pytest
 notifications:
   email: false
+after_success:
+  - coveralls
