@@ -29,7 +29,6 @@ stop = {
 def test_rms():
     geo = [back_lens, lens, stop]
     ray_group = tp.ray_plane(geo, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=100)
-    oplt = tp.optplot(geo, ray_group)
-    rms = oplt.spotdiagram(optimizer=True)
+    rms = tp.spotdiagram(geo, ray_group, optimizer=True)
     assert pytest.approx(rms, 0., abs=1e-14)
 

@@ -56,8 +56,12 @@ def rayaberration(geo_params, rays, pltparams= {'color': 'red', 'linewidth': 2})
     norm_coords = Y_start[ray_subset_idxs] - chief_ray[1]
     norm_coords[np.where(norm_coords < 0)] /= abs(np.min(norm_coords))
     norm_coords[np.where(norm_coords > 0)] /= abs(np.max(norm_coords))
+    #Used to show axes when there is no aberration
+    if np.all(rel_stops == 0.):
+        plt.plot([0., 0.], [-.04, .04], 'k')
+    else:
+        plt.plot([0]*len(rel_stops), rel_stops, 'k')
     plt.plot(norm_coords, [0]*len(norm_coords), 'k')
-    plt.plot([0]*len(rel_stops), rel_stops, 'k')
     plt.plot(norm_coords, rel_stops, **pltparams)
 
 

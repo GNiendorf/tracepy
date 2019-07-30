@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import least_squares
 
-from .optplot import optplot
+from .optplot import spotdiagram
 from .geometry import geometry
 from .raygroup import ray_plane
 
@@ -27,8 +27,7 @@ def get_rms(inputs, geoparams, vary_dicts):
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
     try:
-        oplt = optplot(params_iter, raygroup_iter)
-        rms = oplt.spotdiagram(optimizer=True)
+        rms = spotdiagram(params_iter, raygroup_iter, optimizer=True)
     except:
         rms = 999.
     return rms
