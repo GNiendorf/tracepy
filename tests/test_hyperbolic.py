@@ -26,9 +26,9 @@ stop = {
     'Diam': 2.2
 }
 
-def test_rms():
+def test_rms_hyperbolic():
     geo = [back_lens, lens, stop]
     ray_group = tp.ray_plane(geo, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=100)
     rms = tp.spotdiagram(geo, ray_group, optimizer=True)
-    assert pytest.approx(rms, 0., abs=1e-14)
+    assert rms == 0.
 
