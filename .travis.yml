@@ -19,7 +19,7 @@ install:
       coveralls=1.5.1
   - pip install .
 script:
-  - pytest
+  - pytest --cov=tracepy tests/
 notifications:
   email: false
 after_success:
