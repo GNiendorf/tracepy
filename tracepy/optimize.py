@@ -2,7 +2,6 @@ import numpy as np
 from scipy.optimize import least_squares
 
 from .optplot import spotdiagram
-from .geometry import geometry
 from .raygroup import ray_plane
 
 def update_geometry(inputs, geoparams, vary_dicts):
@@ -21,7 +20,7 @@ def update_geometry(inputs, geoparams, vary_dicts):
     return geoparams
 
 def get_rms(inputs, geoparams, vary_dicts):
-    """ 
+    """
         Return the rms of an updated geometry.
     """
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
@@ -33,8 +32,8 @@ def get_rms(inputs, geoparams, vary_dicts):
     return rms
 
 def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
-    """ 
-        Optimize a given geometry for a given varylist and return the new geometry. 
+    """
+        Optimize a given geometry for a given varylist and return the new geometry.
     """
     initial_guess = []
     param_lb = []
@@ -42,9 +41,9 @@ def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
     for dict_ in vary_dicts:
         name = dict_["name"]
         vary_list = dict_["vary"]
-        for surf_idx, surface in enumerate(geoparams):
+        for surface in geoparams:
             if "name" in surface and surface["name"] == name:
-                for idx, item in enumerate(vary_list):
+                for item in vary_list:
                     attr = surface[item]
                     if item == 'P' and (isinstance(item, float) or isinstance(item, int)):
                          attr = attr[2]
@@ -60,6 +59,6 @@ def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
     param_bounds = [tuple(param_lb), tuple(param_ub)]
     if typeof == 'least_squares':
         res = least_squares(get_rms, initial_guess, args=(geoparams, vary_dicts), max_nfev=max_iter,\
-                            bounds = param_bounds) 
+                            bounds = param_bounds)
     new_params = update_geometry(np.around(res.x, 3), geoparams, vary_dicts)
     return new_params

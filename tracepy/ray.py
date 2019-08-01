@@ -1,5 +1,4 @@
 import numpy as np
-from numpy import cos, sin, pi, sqrt
 
 from .transforms import *
 
@@ -20,24 +19,30 @@ class ray:
 
     def find_intersection(self, surface):
         """ Finds the intersection point of a ray with a surface. """
-        s_0 = -self.P[2]/self.D[2] #Initial guesses, see Spencer, Murty.
+        #Initial guesses, see Spencer, Murty for explanation.
+        s_0 = -self.P[2]/self.D[2]
         X_1 = self.P[0]+self.D[0]*s_0
         Y_1 = self.P[1]+self.D[1]*s_0
         s_j = [0., 0.]
-        error = 1. #Initial error.
+        #Initial error.
+        error = 1.
         n_iter = 0
-        n_max = 1e4 #Max iterations allowed.
+        #Max iterations allowed.
+        n_max = 1e4
         while error > 1e-6 and n_iter < n_max:
             X, Y, Z = [X_1, Y_1, 0.]+np.dot(self.D, s_j[0])
             try:
-                func, normal= surface.get_surface([X, Y, Z]) #'normal' is the surface direction numbers.
+                #'normal' is the surface direction numbers.
+                func, normal= surface.get_surface([X, Y, Z])
                 deriv = np.dot(normal, self.D)
-                s_j = s_j[1], s_j[1]-func/deriv #Newton-raphson method
+                #Newton-raphson method
+                s_j = s_j[1], s_j[1]-func/deriv
             except:
                 self.P = None
                 return None
-            error = abs(func) #Error is how far f(X, Y, Z) is from 0.
-            n_iter += 1 
+            #Error is how far f(X, Y, Z) is from 0.
+            error = abs(func)
+            n_iter += 1
         if n_iter == n_max or s_0+s_j[0] < 0 or np.dot(([X, Y, Z]-self.P), self.D) < 0.:
             self.P = None
         else:
@@ -51,7 +56,7 @@ class ray:
         b = (pow(mu,2)-1)/pow(np.linalg.norm(self.normal), 2)
         if typeof == 'stop':
             pass
-        elif b > pow(a, 2) or typeof == 'reflection': 
+        elif b > pow(a, 2) or typeof == 'reflection':
             self.reflection(surface, a/mu)
         elif typeof == 'refraction':
             self.refraction(surface, mu, a, b)
@@ -60,18 +65,21 @@ class ray:
         """ Reflects the ray off a surface and updates the ray's direction. """
         k, l, m = self.D
         K, L, M = self.normal
-        self.D = np.array([k-2.*a*K, l-2.*a*L, m-2.*a*M])        
+        self.D = np.array([k-2.*a*K, l-2.*a*L, m-2.*a*M])
         
     def refraction(self, surface, mu, a, b):
         """ Simulates refraction of a ray into a surface and updates the ray's direction. """
         k, l, m = self.D
-        K, L, M = self.normal        
+        K, L, M = self.normal
         G = [-b/(2*a), -b/(2*a)]
-        error = 1. #Initial error.
-        niter = 0 
-        nmax = 1e5 #Max iterations allowed.
-        while error > 1e-15 and niter < nmax: 
-            G = G[1], (pow(G[1],2)-b)/(2*(G[1]+a)) #Newton-raphson method
+        #Initial error.
+        error = 1.
+        niter = 0
+        #Max iterations allowed.
+        nmax = 1e5
+        while error > 1e-15 and niter < nmax:
+            #Newton-raphson method
+            G = G[1], (pow(G[1],2)-b)/(2*(G[1]+a))
             error = abs(pow(G[1],2)+2*a*G[1]+b)
             niter += 1
         if niter==nmax:
@@ -89,16 +97,19 @@ class ray:
         """ Updates the P_hist and D_hist arrays from current P and D arrays. """
         self.P_hist.append(self.P)
         self.D_hist.append(self.D)
-        
+
     def propagate(self, surfaces):
         """ Propagates a ray through a given surface with a given interaction. """
         for surface in surfaces:
             self.transform(surface)
             self.find_intersection(surface)
-            if self.P is None: #Results from failure to converge.
+            #Results from failure to converge.
+            if self.P is None:
                 break
             self.interact(surface, surface.action)
-            if self.P is None: #Results from too many iterations.
+            #Results from too many iterations.
+            if self.P is None:
                 break
             self.ray_lab_frame(surface)
-            self.update() #Update current to history arrays.
+            #Update current to history arrays.
+            self.update()

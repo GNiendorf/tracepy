@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import cos, sin, pi, sqrt
+from numpy import cos, sin
 
 def gen_rot(ang):
     """ Returns rotation matrix from 3 rotation angles. """
@@ -19,10 +19,10 @@ def gen_rot(ang):
     return R
 
 def transform(R, surface, points, D=None):
-    """ 
-        Inputs of points and D must both be 2d arrays 
+    """
+        Inputs of points and D must both be 2d arrays
         Returns both points and D in transformed frame.
-        Arrays are flattened if they have one row. 
+        Arrays are flattened if they have one row.
     """
     tran_points = np.array(np.dot(R, (points-surface.P).T).T)
     if D is not None:
@@ -34,12 +34,12 @@ def transform(R, surface, points, D=None):
     if len(tran_points) == 1:
         tran_points = tran_points.flatten()
     return tran_points
-    
+
 def lab_frame(R, surface, points, D=None):
-    """ 
-        Inputs of points and D must both be 2d arrays 
+    """
+        Inputs of points and D must both be 2d arrays
         Returns both points and D in lab frame.
-        Arrays are flattened if they have one row. 
+        Arrays are flattened if they have one row.
     """
     lab_points = np.array(np.dot(R.T, points.T).T)+surface.P
     if D is not None:
