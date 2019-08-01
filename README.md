@@ -1,4 +1,4 @@
-## TracePy
+## <img alt="TracePy" src="https://user-images.githubusercontent.com/25272611/62305283-dc62a300-b43c-11e9-8436-d88c8555b110.png" height="60">
 
 [![Build Status](https://travis-ci.org/GNiendorf/tracepy.svg?branch=master)](https://travis-ci.org/GNiendorf/tracepy)
 [![Coverage Status](https://coveralls.io/repos/github/GNiendorf/tracepy/badge.svg?branch=master)](https://coveralls.io/github/GNiendorf/tracepy?branch=master)
