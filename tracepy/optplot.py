@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 
 from .geometry import geometry
 from .transforms import transform
+from .exceptions import TraceError
 
 def _gen_object_points(surface, surface_idx, rays):
     """ Transform intersection points into a surfaces' reference frame. """
     points = np.array([rayiter.P_hist[surface_idx] for rayiter in rays if rayiter.P is not None])
     if points.size == 0:
-        raise Exception("No rays survived.")
+        #No rays survived
+        raise TraceError()
     #Get X,Y points in obj. reference frame.
     points_obj = transform(surface.R, surface, points)
     #Round arrays to upper bound on accuracy.

@@ -3,6 +3,7 @@ from scipy.optimize import least_squares
 
 from .optplot import spotdiagram
 from .raygroup import ray_plane
+from .exceptions import TraceError
 
 def update_geometry(inputs, geoparams, vary_dicts):
     """
@@ -27,7 +28,7 @@ def get_rms(inputs, geoparams, vary_dicts):
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
     try:
         rms = spotdiagram(params_iter, raygroup_iter, optimizer=True)
-    except:
+    except TraceError:
         rms = 999.
     return rms
 
