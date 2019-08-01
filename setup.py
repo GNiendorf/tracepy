@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
 
 setup(name='tracepy',
-      version='0.1',
+      version='0.1.1',
       description='Optical design software for python.',
       url='http://github.com/GNiendorf/tracepy',
       long_description=long_description,
