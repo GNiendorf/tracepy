@@ -2,6 +2,7 @@ import numpy as np
 from numpy import sqrt
 
 from .transforms import *
+from .exceptions import NotOnSurfaceError
 
 class geometry:
     """ Class for the different surfaces in a optical system. """
@@ -55,8 +56,8 @@ class geometry:
         """ Returns function value and derivitive list for conics and sphere surfaces. """
         X,Y,Z = point
         rho = sqrt(pow(X,2) + pow(Y, 2))
-        if rho > self.Diam/2. or rho < self.diam/2.: #Not on surface
-            raise Exception()
+        if rho > self.Diam/2. or rho < self.diam/2.:
+            raise NotOnSurfaceError()
         #Conic equation.
         function = Z - self.c*pow(rho, 2)/(1 + pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5))
         #See Spencer, Murty section on rotational surfaces for definition of E.

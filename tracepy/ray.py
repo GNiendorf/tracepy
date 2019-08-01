@@ -1,6 +1,7 @@
 import numpy as np
 
 from .transforms import *
+from .exceptions import NormalizationError, NotOnSurfaceError
 
 class ray:
     """ Class for rays and their propagation through surfaces. """
@@ -11,7 +12,8 @@ class ray:
         self.D_hist = [self.D]
         self.N = N_0
         if abs(np.linalg.norm(self.D)-1.) > .01:
-            raise Exception("Ray direction cosines are not normalized.")
+            #Ray direction cosines are not normalized.
+            raise NormalizationError()
 
     def transform(self, surface):
         """ Updates position and direction of a ray to obj coordinate system. """
@@ -37,7 +39,7 @@ class ray:
                 deriv = np.dot(normal, self.D)
                 #Newton-raphson method
                 s_j = s_j[1], s_j[1]-func/deriv
-            except:
+            except NotOnSurfaceError:
                 self.P = None
                 return None
             #Error is how far f(X, Y, Z) is from 0.
