@@ -28,22 +28,3 @@ def ray_plane(geo_params, pos, radius, d, ang=None, nrays=1000):
     for rayiter in rays:
         rayiter.propagate(geo)
     return rays
-
-def ray_fan(geo_params, pos, radius, d, ang=None, nrays=1000):
-    """ Creates a fan of rays and propagates them through geometry. """
-    #To-do: Need to account for d and angle of fan
-    D_arr = 10*np.random.rand(nrays, 3)
-    D_arr[:,1]*=np.random.uniform(-1,1,nrays)
-    D_arr[:,0]*=np.random.uniform(-1,1,nrays)
-    if isinstance(pos, list):
-        P_arr = [pos] * (2*nrays)
-    else:
-        P_arr = np.zeros((2*nrays,3))
-        P_arr[:,2] = pos
-    #Initialize rays.
-    rays = [ray(params={'D':D, 'P':P}) for D,P in zip(D_arr, P_arr)]
-    geo = [geometry(surf) for surf in geo_params]
-    #Propagate rays through geometry.
-    for rayiter in rays:
-        rayiter.propagate(geo)
-    return rays
