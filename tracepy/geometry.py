@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import cos, sin, sqrt
+from numpy import sqrt
 
 from .transforms import *
 

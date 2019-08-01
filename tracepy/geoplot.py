@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import cos, pi, sqrt
+from numpy import pi
 
 from .geometry import geometry
 from .transforms import lab_frame
@@ -39,7 +39,7 @@ def _plot_rays(rays, axes, pltparams):
 def _clip_lens(surfaces, surfpoints, idx):
     """ Clips points ouside of a lens intersection point. """
     surf1, surf2 = surfaces[idx], surfaces[idx+1]
-    d = sqrt(np.sum(np.square(surf1.P - surf2.P)))
+    d = np.sqrt(np.sum(np.square(surf1.P - surf2.P)))
     points1, points2 = np.nan_to_num(surfpoints[idx]), np.nan_to_num(surfpoints[idx+1])
     points2[:,2] += d
     clipped_idx = (points2[:,2] - points1[:,2]) <= 0.

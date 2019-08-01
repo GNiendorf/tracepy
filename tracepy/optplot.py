@@ -1,7 +1,6 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-from numpy import cos, sin, pi
 
 from .geometry import geometry
 from .transforms import transform

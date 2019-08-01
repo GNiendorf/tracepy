@@ -1,5 +1,4 @@
 import numpy as np
-from numpy import cos, sin, pi
 
 from .transforms import *
 

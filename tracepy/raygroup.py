@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import cos, pi, sqrt
+from numpy import pi, sqrt
 
 from .ray import ray
 from .geometry import geometry
