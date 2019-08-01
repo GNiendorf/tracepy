@@ -1,5 +1,5 @@
 """
-custom warnings and error classes used in TracePy
+Custom warnings and error classes used in TracePy.
 """
 
 class NormalizationError(Exception):
