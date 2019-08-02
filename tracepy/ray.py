@@ -200,7 +200,22 @@ class ray:
         self.D_hist.append(self.D)
 
     def propagate(self, surfaces):
-        """ Propagates a ray through a given surfaces list. """
+        """Propagates a ray through a given surfaces list.
+
+        Note
+        ----
+        If self.P is None then the ray failed to converge or
+        took too many iterations to meet the required accuracy.
+        Note that this is used (self.P is None) as a flag in
+        many other functions in TracePy.
+
+        Parameters
+        ----------
+        surfaces : list of geometry objects
+            Surfaces to propagate through in order of propagation.
+
+        """
+
         for surface in surfaces:
             self.transform(surface)
             self.find_intersection(surface)
