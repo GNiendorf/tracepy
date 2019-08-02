@@ -1,6 +1,8 @@
-"""
-Custom warnings and error classes used in TracePy.
-"""
+# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
+#
+# Custom warnings and error classes used in TracePy.
+#
+# License: MIT
 
 class NormalizationError(Exception):
     """ Custom exception for unnormalized input. """

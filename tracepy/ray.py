@@ -1,3 +1,9 @@
+# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
+#
+# Classes and methods for defining rays and their propagation rules.
+#
+# License: MIT
+
 import numpy as np
 
 from .transforms import *

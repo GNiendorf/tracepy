@@ -1,3 +1,9 @@
+# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
+#
+# Functions for plotting surfaces.
+#
+# License: MIT
+
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import pi

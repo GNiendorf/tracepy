@@ -1,3 +1,9 @@
+# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
+#
+# Functions for optimizing an optical system.
+#
+# License: MIT
+
 import numpy as np
 from scipy.optimize import least_squares
 

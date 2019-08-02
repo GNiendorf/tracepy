@@ -1,3 +1,9 @@
+# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
+#
+# Classes and methods for defining surfaces.
+#
+# License: MIT
+
 import numpy as np
 
 from .transforms import *
