@@ -128,7 +128,6 @@ class geometry:
             Function derivitive of the surface at the point given. Used to determine which
             direction the ray needs to travel in and the step size to intersect the surface.
 
-
         """
 
         X,Y,Z = point
@@ -154,7 +153,6 @@ class geometry:
         -------
         function : 1d np.array
             np.array of Z values for each X,Y pair.
-
 
         """
 
