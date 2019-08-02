@@ -19,7 +19,7 @@ def _gen_points(surfaces):
         Points (X, Y, Z) in the surface's reference frame.
 
     """
-
+    
     surfpoints = []
     for surface in surfaces:
         bound = surface.Diam/2.
@@ -48,7 +48,7 @@ def _plot_rays(rays, axes, pltparams):
         Axes (X, Y, Z) to plot from ray points.
 
     """
-
+    
     for ray in rays:
         for idx,_ in enumerate(ray.P_hist[:-1]):
             F, G = ray.P_hist[idx][axes]
@@ -75,7 +75,7 @@ def _clip_lens(surfaces, surfpoints, idx):
         Points after clipping.
 
     """
-
+    
     surf1, surf2 = surfaces[idx], surfaces[idx+1]
     d = np.sqrt(np.sum(np.square(surf1.P - surf2.P)))
     points1, points2 = np.nan_to_num(surfpoints[idx]), np.nan_to_num(surfpoints[idx+1])
@@ -100,7 +100,7 @@ def _plot_surfaces(geo_params, axes):
         Axes (X, Y, Z) to plot surfaces in.
 
     """
-
+    
     surfaces = [geometry(surf) for surf in geo_params]
     surfpoints = _gen_points(surfaces)
     lens_check = 0

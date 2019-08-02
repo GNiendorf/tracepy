@@ -13,17 +13,17 @@ def update_geometry(inputs, geoparams, vary_dicts):
     inputs : list of floats/ints
         Values for varying parameters that the optimizer selected.
     geoparams : list of dictionaries
-    	Surface parameters in dictionary form.
+        Surface parameters in dictionary form.
     vary_dicts : list of dictionaries
-    	Lists the parameters that the user wants to optimize.
+        Lists the parameters that the user wants to optimize.
 
     Returns
     -------
     geoparams : list of dictionaries
-    	Returns the list of paramaters after updating it with inputs.
+        Returns the list of paramaters after updating it with inputs.
 
     """
-
+    
     vary_idxs = 0
     for dict_ in vary_dicts:
         name = dict_["name"]
@@ -49,17 +49,17 @@ def get_rms(inputs, geoparams, vary_dicts):
     inputs : list of floats/ints
         Values for varying parameters that the optimizer selected.
     geoparams : list of dictionaries
-    	Surface parameters in dictionary form.
+        Surface parameters in dictionary form.
     vary_dicts : list of dictionaries
-    	Lists the parameters that the user wants to optimize.
+        Lists the parameters that the user wants to optimize.
 
     Returns
     -------
     rms : float
-    	RMS of the spotdiagram.
+        RMS of the spotdiagram.
 
     """
-
+    
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
     try:
@@ -74,18 +74,18 @@ def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
     Parameters
     ----------
     geoparams : list of dictionaries
-    	Surface parameters in dictionary form.
+        Surface parameters in dictionary form.
     vary_dicts : list of dictionaries
-    	Lists the parameters that the user wants to optimize.
-	typeof : str
-		Type of optimization to use.
-	max_iter : int
-		Max number of function calls until the optimizer stops.
+        Lists the parameters that the user wants to optimize.
+    typeof : str
+        Type of optimization to use.
+    max_iter : int
+        Max number of function calls until the optimizer stops.
 
     Returns
     -------
     new_params : list of dictionaries
-    	List of otimized dictionaries that describe surfaces.
+        List of otimized dictionaries that describe surfaces.
 
     """
     initial_guess = []

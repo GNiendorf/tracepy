@@ -42,7 +42,7 @@ class geometry:
         Rotation matrix for the surface from rotation angles D.
 
     """
-
+    
     def __init__(self, params):
         self.P = params['P']
         self.D = np.array(params.get('D', [0., 0., 0.]))
@@ -79,7 +79,7 @@ class geometry:
             this does not affect the calculation since c is 0.
 
         """
-
+        
         if isinstance(self.P, float) or isinstance(self.P, int):
             #Allow on axis integer for P.
             self.P = np.array([0., 0., self.P])
@@ -130,7 +130,7 @@ class geometry:
 
 
         """
-
+        
         X,Y,Z = point
         rho = np.sqrt(pow(X,2) + pow(Y, 2))
         if rho > self.Diam/2. or rho < self.diam/2.:
@@ -157,7 +157,7 @@ class geometry:
 
 
         """
-
+        
         X, Y = point[:,0], point[:,1]
         rho = np.sqrt(pow(X,2) + pow(Y,2))
         #Initialize Z value array
