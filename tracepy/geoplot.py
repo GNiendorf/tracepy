@@ -152,7 +152,21 @@ def _plot_surfaces(geo_params, axes):
         plt.plot(G, F, 'k')
 
 def plotxz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
-    """ Plots the xz coordinates of all rays and surface cross sections. """
+    """Plots the xz coordinates of all rays and surface cross sections.
+
+    Parameters
+    ----------
+    geo_params : list of dictionaries
+        Surfaces in propagation order to plot.
+    rays : list of ray objects
+        Rays that are going to be plotted.
+    pltparams : dictionary
+        Plot characteristics of rays such as colors and alpha.
+    both (optional) : bool
+        Flag for overriding a 111 subplot for self.plot2d.
+
+    """
+
     rays = np.array([rayiter for rayiter in rays if rayiter.P is not None])
     #Override 1,1,1 subplot if displaying side-by-side.
     if both is None:
@@ -164,7 +178,21 @@ def plotxz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
     plt.ylabel("X")
 
 def plotyz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
-    """ Plots the yz coordinates of all rays and surface cross sections. """
+    """Plots the yz coordinates of all rays and surface cross sections.
+
+    Parameters
+    ----------
+    geo_params : list of dictionaries
+        Surfaces in propagation order to plot.
+    rays : list of ray objects
+        Rays that are going to be plotted.
+    pltparams : dictionary
+        Plot characteristics of rays such as colors and alpha.
+    both (optional) : bool
+        Flag for overriding a 111 subplot for self.plot2d.
+
+    """
+
     rays = np.array([rayiter for rayiter in rays if rayiter.P is not None])
     #Override 1,1,1 subplot if displaying side-by-side.
     if both is None:
@@ -176,7 +204,19 @@ def plotyz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
     plt.ylabel("Y")
 
 def plot2d(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }):
-    """ Plots both xz and yz side-by-side. """
+    """Plots both xz and yz side-by-side.
+
+    Parameters
+    ----------
+    geo_params : list of dictionaries
+        Surfaces in propagation order to plot.
+    rays : list of ray objects
+        Rays that are going to be plotted.
+    pltparams : dictionary
+        Plot characteristics of rays such as colors and alpha.
+
+    """
+
     plt.subplot(2,1,1, aspect='equal')
     plotxz(geo_params, rays, pltparams, both=True)
     plt.subplot(2,1,2, aspect='equal')
