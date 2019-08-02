@@ -6,9 +6,24 @@ from .raygroup import ray_plane
 from .exceptions import TraceError
 
 def update_geometry(inputs, geoparams, vary_dicts):
+    """Return the geometry requested by the optimization algorithm.
+
+    Parameters
+    ----------
+    inputs : list of floats/ints
+        Values for varying parameters that the optimizer selected.
+    geoparams : list of dictionaries
+    	Surface parameters in dictionary form.
+    vary_dicts : list of dictionaries
+    	Lists the parameters that the user wants to optimize.
+
+    Returns
+    -------
+    geoparams : list of dictionaries
+    	Returns the list of paramaters after updating it with inputs.
+
     """
-        Return the geometry requested by the optimization algorithm.
-    """
+
     vary_idxs = 0
     for dict_ in vary_dicts:
         name = dict_["name"]
@@ -21,9 +36,30 @@ def update_geometry(inputs, geoparams, vary_dicts):
     return geoparams
 
 def get_rms(inputs, geoparams, vary_dicts):
+    """Return the rms of an updated geometry.
+
+    Note
+    ----
+    If no rays survive then a large rms value is chosen
+    so that the optimizer is discouraged from looking
+    there.
+
+    Parameters
+    ----------
+    inputs : list of floats/ints
+        Values for varying parameters that the optimizer selected.
+    geoparams : list of dictionaries
+    	Surface parameters in dictionary form.
+    vary_dicts : list of dictionaries
+    	Lists the parameters that the user wants to optimize.
+
+    Returns
+    -------
+    rms : float
+    	RMS of the spotdiagram.
+
     """
-        Return the rms of an updated geometry.
-    """
+
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
     try:
@@ -33,8 +69,24 @@ def get_rms(inputs, geoparams, vary_dicts):
     return rms
 
 def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
-    """
-        Optimize a given geometry for a given varylist and return the new geometry.
+    """Optimize a given geometry for a given varylist and return the new geometry.
+
+    Parameters
+    ----------
+    geoparams : list of dictionaries
+    	Surface parameters in dictionary form.
+    vary_dicts : list of dictionaries
+    	Lists the parameters that the user wants to optimize.
+	typeof : str
+		Type of optimization to use.
+	max_iter : int
+		Max number of function calls until the optimizer stops.
+
+    Returns
+    -------
+    new_params : list of dictionaries
+    	List of otimized dictionaries that describe surfaces.
+
     """
     initial_guess = []
     param_lb = []

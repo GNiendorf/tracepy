@@ -6,7 +6,20 @@ from .geometry import geometry
 from .transforms import lab_frame
 
 def _gen_points(surfaces):
-    """ Generates the mesh points for each surface in the obj frame. """
+    """Generates the mesh points for each surface in the obj frame.
+
+    Parameters
+    ----------
+    surface : geometry object
+        Surface whos reference frame to generate the points in.
+
+    Returns
+    -------
+    surfpoints : 2d np.array
+        Points (X, Y, Z) in the surface's reference frame.
+
+    """
+
     surfpoints = []
     for surface in surfaces:
         bound = surface.Diam/2.
@@ -25,7 +38,17 @@ def _gen_points(surfaces):
     return np.array(surfpoints)
 
 def _plot_rays(rays, axes, pltparams):
-    """ Plots 2d ray history points. Takes list axes to specify axes (0, 1, 2) to plot. """
+    """Plots 2d ray history points. Takes list axes to specify axes (0, 1, 2) to plot.
+
+    Parameters
+    ----------
+    rays : list of ray objects
+        Rays that are going to be plotted.
+    axes : list of length 2 with integers from range [0,2]
+        Axes (X, Y, Z) to plot from ray points.
+
+    """
+
     for ray in rays:
         for idx,_ in enumerate(ray.P_hist[:-1]):
             F, G = ray.P_hist[idx][axes]
@@ -37,7 +60,22 @@ def _plot_rays(rays, axes, pltparams):
         plt.plot([G_p, G_p+I_p],[F_p, F_p+H_p], **pltparams)
 
 def _clip_lens(surfaces, surfpoints, idx):
-    """ Clips points ouside of a lens intersection point. """
+    """Clips points ouside of a lens intersection point.
+
+    Parameters
+    ----------
+    surfaces : list of geometry objects
+        Surface whos reference frame to transform from.
+    surfpoints : 2d np.array
+        Points from surface for each row that will be clipped.
+
+    Returns
+    -------
+    surfpoints : 2d np.array
+        Points after clipping.
+
+    """
+
     surf1, surf2 = surfaces[idx], surfaces[idx+1]
     d = np.sqrt(np.sum(np.square(surf1.P - surf2.P)))
     points1, points2 = np.nan_to_num(surfpoints[idx]), np.nan_to_num(surfpoints[idx+1])
@@ -48,7 +86,21 @@ def _clip_lens(surfaces, surfpoints, idx):
     return surfpoints
 
 def _plot_surfaces(geo_params, axes):
-    """ Plots 2d surface cross sections. Takes list axes to specify axes (0, 1, 2) to plot. """
+    """Plots 2d surface cross sections. Takes list axes to specify axes (0, 1, 2) to plot.
+
+    Note
+    ----
+    Directly plots the surfaces rather than returning something.
+
+    Parameters
+    ----------
+    geo_params : list of dictionaries
+        Surfaces in propagation order to plot.
+    axes : list of length 2 with integers from range [0,2]
+        Axes (X, Y, Z) to plot surfaces in.
+
+    """
+
     surfaces = [geometry(surf) for surf in geo_params]
     surfpoints = _gen_points(surfaces)
     lens_check = 0
