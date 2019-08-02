@@ -44,3 +44,6 @@ docs/_build/
 .ipynb_checkpoints
 
 .DS_store
+
+#mkdocs
+site/
