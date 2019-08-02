@@ -15,7 +15,7 @@ def save_optics(geo_params, filename):
         Output filename.
 
     """
-    
+
     table = pd.DataFrame.from_dict(geo_params)
     table[['X', 'Y', 'Z']] = pd.DataFrame(table.P.values.tolist(), index= table.index)
     table[['Alpha', 'Beta', 'Gamma']] = pd.DataFrame(table.D.values.tolist(), index= table.index)

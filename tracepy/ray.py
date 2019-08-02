@@ -24,7 +24,7 @@ class ray:
         Index of refraction of current material.
 
     """
-    
+
     def __init__(self, params, N_0=1):
         self.P = np.array(params['P'])
         self.D = np.array(params['D'])
@@ -56,7 +56,7 @@ class ray:
             Surface to find intersection of ray with.
 
         """
-        
+
         #Initial guesses, see Spencer, Murty for explanation.
         s_0 = -self.P[2]/self.D[2]
         X_1 = self.P[0]+self.D[0]*s_0
@@ -106,7 +106,7 @@ class ray:
             stop -> Don't change ray direction.
 
         """
-        
+
         mu = self.N/surface.N
         a = mu*np.dot(self.D, self.normal)/pow(np.linalg.norm(self.normal), 2)
         b = (pow(mu,2)-1)/pow(np.linalg.norm(self.normal), 2)
@@ -134,7 +134,7 @@ class ray:
             Constant defined in the interact method.
 
         """
-        
+
         k, l, m = self.D
         K, L, M = self.normal
         self.D = np.array([k-2.*a*K, l-2.*a*L, m-2.*a*M])
@@ -162,7 +162,7 @@ class ray:
             Returns 0 if the number of iterations exceeds the max allowed to converge.
 
         """
-        
+
         k, l, m = self.D
         K, L, M = self.normal
         G = [-b/(2*a), -b/(2*a)]

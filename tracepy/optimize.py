@@ -23,7 +23,7 @@ def update_geometry(inputs, geoparams, vary_dicts):
         Returns the list of paramaters after updating it with inputs.
 
     """
-    
+
     vary_idxs = 0
     for dict_ in vary_dicts:
         name = dict_["name"]
@@ -59,7 +59,7 @@ def get_rms(inputs, geoparams, vary_dicts):
         RMS of the spotdiagram.
 
     """
-    
+
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
     try:
@@ -88,6 +88,7 @@ def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
         List of otimized dictionaries that describe surfaces.
 
     """
+
     initial_guess = []
     param_lb = []
     param_ub = []

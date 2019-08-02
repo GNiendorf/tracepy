@@ -21,7 +21,7 @@ def gen_rot(ang):
         Returns the rotation matrix.
 
     """
-    
+
     alpha, beta, gamma = ang
     R_11 = cos(alpha)*cos(gamma)+sin(alpha)*sin(beta)*sin(gamma)
     R_12 = -cos(beta)*sin(gamma)
@@ -63,7 +63,7 @@ def transform(R, surface, points, D=None):
         Directions in the transformed reference frame.
 
     """
-    
+
     tran_points = np.array(np.dot(R, (points-surface.P).T).T)
     if D is not None:
         tran_D = np.array(np.dot(R, D.T).T)
@@ -101,7 +101,7 @@ def lab_frame(R, surface, points, D=None):
         Directions in the lab reference frame.
 
     """
-    
+
     lab_points = np.array(np.dot(R.T, points.T).T)+surface.P
     if D is not None:
         lab_D = np.array(np.dot(R.T, D.T).T)

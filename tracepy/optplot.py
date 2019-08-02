@@ -32,7 +32,7 @@ def _gen_object_points(surface, surface_idx, rays):
 
 
     """
-    
+
     points = np.array([rayiter.P_hist[surface_idx] for rayiter in rays if rayiter.P is not None])
     if points.size == 0:
         #No rays survived
@@ -67,7 +67,7 @@ def spotdiagram(geo_params, rays, pltparams = {'color': 'red'}, optimizer=False)
         the rms of the spot diagram.
 
     """
-    
+
     stop = geometry(geo_params[-1])
     X, Y, points_obj = _gen_object_points(stop, -1, rays)
     rms = np.std(points_obj[:,[0,1]] - points_obj[:,[0,1]].mean(axis=0))
@@ -98,7 +98,7 @@ def plotobject(geo_params, rays, pltparams = {'color': 'blue'}):
         Plotting attributes of the object spot diagram.
 
     """
-    
+
     start = geometry(geo_params[0])
     X, Y, points_obj = _gen_object_points(start, 0, rays)
     rms = np.std(points_obj[:,[0,1]] - points_obj[:,[0,1]].mean(axis=0))
@@ -126,7 +126,7 @@ def rayaberration(geo_params, rays, pltparams= {'color': 'red', 'linewidth': 2})
         Plotting attributes of the curve.
 
     """
-    
+
     start = geometry(geo_params[0])
     stop = geometry(geo_params[-1])
     X_start, Y_start, start_points = _gen_object_points(start, 0, rays)

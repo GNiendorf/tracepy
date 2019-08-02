@@ -33,7 +33,7 @@ def ray_plane(geo_params, pos, radius, d, nrays=100):
         Returns rays after propagating them through geometry list.
 
     """
-    
+
     x_mesh = np.linspace(-radius, radius, int(4./pi*sqrt(nrays)))
     y_mesh = np.linspace(-radius, radius, int(4./pi*sqrt(nrays)))
     x_points, y_points = np.meshgrid(x_mesh, y_mesh)
