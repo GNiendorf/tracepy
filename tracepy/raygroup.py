@@ -4,8 +4,36 @@ from numpy import pi, sqrt
 from .ray import ray
 from .geometry import geometry
 
-def ray_plane(geo_params, pos, radius, d, ang=None, nrays=1000):
-    """ Creates a plane of rays and propagates them through geometry. """
+def ray_plane(geo_params, pos, radius, d, nrays=100):
+    """Creates a plane of rays and propagates them through geometry.
+
+    Note
+    ----
+    This is done by creating a square grid with side length 2 x radius
+    and then chopping off all points outside of a radius. But this means
+    the number of rays is significantly less than the parameter nrays in
+    some cases. This needs to be fixed eventually.
+
+    Parameters
+    ----------
+    geo_params : list of dictionaries
+        Dictionaries correspond to surfaces.
+    pos : list of length 3 or float/int
+        X, Y, and Z values of the plane or just the Z value.
+    d : list of length 3
+        Direction cosines for each ray.
+    radius : float/int
+        Radius of ray plane.
+    nrays : int
+        Number of rays in the ray plane.
+
+    Returns
+    -------
+    list of ray objects
+        Returns rays after propagating them through geometry list.
+
+    """
+
     x_mesh = np.linspace(-radius, radius, int(4./pi*sqrt(nrays)))
     y_mesh = np.linspace(-radius, radius, int(4./pi*sqrt(nrays)))
     x_points, y_points = np.meshgrid(x_mesh, y_mesh)

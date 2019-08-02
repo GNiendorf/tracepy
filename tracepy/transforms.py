@@ -2,7 +2,26 @@ import numpy as np
 from numpy import cos, sin
 
 def gen_rot(ang):
-    """ Returns rotation matrix from 3 rotation angles. """
+    """Returns a rotation matrix from 3 rotation angles.
+
+    Note
+    ----
+    np.matrix is deprecated and needs to be changed to a
+    normal np.array but I remember difficulties with the
+    regular np.array. Needs to be fixed eventually.
+
+    Parameters
+    ----------
+    ang : np.array of length 3
+        Euler angles alpha, beta, gamma in the lab frame.
+
+    Returns
+    -------
+    np.matrix((3,3))
+        Returns the rotation matrix.
+
+    """
+
     alpha, beta, gamma = ang
     R_11 = cos(alpha)*cos(gamma)+sin(alpha)*sin(beta)*sin(gamma)
     R_12 = -cos(beta)*sin(gamma)
@@ -19,11 +38,32 @@ def gen_rot(ang):
     return R
 
 def transform(R, surface, points, D=None):
+    """Transforms points into the reference frame of surface.
+
+    Note
+    ----
+    Arrays are flattened before return if they only have one row.
+
+    Parameters
+    ----------
+    R : np.matrix((3,3))
+        Rotation matrix for surface.
+    surface : geometry object
+        Surface whos reference frame to transform into.
+    points : 2d np.array
+        Point for each row that will be transformed.
+    D (optional): 2d np.array
+        Direction for each row that will be transformed.
+
+    Returns
+    -------
+    tran_points : 2d np.array
+        Points in the transformed reference frame.
+    tran_D (optional): 2d np.array
+        Directions in the transformed reference frame.
+
     """
-        Inputs of points and D must both be 2d arrays
-        Returns both points and D in transformed frame.
-        Arrays are flattened if they have one row.
-    """
+
     tran_points = np.array(np.dot(R, (points-surface.P).T).T)
     if D is not None:
         tran_D = np.array(np.dot(R, D.T).T)
@@ -36,11 +76,32 @@ def transform(R, surface, points, D=None):
     return tran_points
 
 def lab_frame(R, surface, points, D=None):
+    """Transforms points into the lab frame.
+
+    Note
+    ----
+    Arrays are flattened before return if they only have one row.
+
+    Parameters
+    ----------
+    R : np.matrix((3,3))
+        Rotation matrix for surface.
+    surface : geometry object
+        Surface whos reference frame to transform from.
+    points : 2d np.array
+        Point for each row that will be transformed.
+    D (optional): 2d np.array
+        Direction for each row that will be transformed.
+
+    Returns
+    -------
+    lab_points : 2d np.array
+        Points in the lab reference frame.
+    lab_D (optional): 2d np.array
+        Directions in the lab reference frame.
+
     """
-        Inputs of points and D must both be 2d arrays
-        Returns both points and D in lab frame.
-        Arrays are flattened if they have one row.
-    """
+
     lab_points = np.array(np.dot(R.T, points.T).T)+surface.P
     if D is not None:
         lab_D = np.array(np.dot(R.T, D.T).T)
