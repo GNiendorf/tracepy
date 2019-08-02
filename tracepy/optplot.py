@@ -13,12 +13,10 @@ def _gen_object_points(surface, surface_idx, rays):
     ----------
     surface : geometry object
         Surface whos reference frame the points will be transformed into.
-
     surface_idx : int
         Integer corresponding to where the surface is in the propagation
         order. For example, 0 means the surface is the first surface rays
         are propagated through.
-
     rays : list of ray objects
         Rays that were propagated through the geometry list.
 
@@ -26,10 +24,8 @@ def _gen_object_points(surface, surface_idx, rays):
     -------
     X, Y : np.array of len(rays)
         X, Y pair in the surface's reference frame.
-
     points_obj: 2d np.array
         X, Y pair points in 2d array for easy rms calculation.
-
 
     """
 
@@ -55,13 +51,10 @@ def spotdiagram(geo_params, rays, pltparams = {'color': 'red'}, optimizer=False)
     ----------
     geo_params : list of dictionaries
         Surfaces in order of propagation.
-
     rays : list of ray objects
         Rays that were propagated through the geometry list.
-
     pltparams : dictionary
         Plotting attributes of the spot diagram.
-
     optimizer : bool
         Flag for whether the optimizer is calling the function to get
         the rms of the spot diagram.
@@ -90,10 +83,8 @@ def plotobject(geo_params, rays, pltparams = {'color': 'blue'}):
     ----------
     geo_params : list of dictionaries
         Surfaces in order of propagation.
-
     rays : list of ray objects
         Rays that were propagated through the geometry list.
-
     pltparams : dictionary
         Plotting attributes of the object spot diagram.
 
@@ -118,10 +109,8 @@ def rayaberration(geo_params, rays, pltparams= {'color': 'red', 'linewidth': 2})
     ----------
     geo_params : list of dictionaries
         Surfaces in order of propagation.
-
     rays : list of ray objects
         Rays that were propagated through the geometry list.
-
     pltparams : dictionary
         Plotting attributes of the curve.
 

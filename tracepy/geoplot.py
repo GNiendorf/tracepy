@@ -46,6 +46,8 @@ def _plot_rays(rays, axes, pltparams):
         Rays that are going to be plotted.
     axes : list of length 2 with integers from range [0,2]
         Axes (X, Y, Z) to plot from ray points.
+    pltparams : dictionary
+        Plot characteristics of rays such as colors and alpha.
 
     """
 
@@ -68,6 +70,8 @@ def _clip_lens(surfaces, surfpoints, idx):
         Surface whos reference frame to transform from.
     surfpoints : 2d np.array
         Points from surface for each row that will be clipped.
+    idx : int
+        Index of surface in propagation order.
 
     Returns
     -------
