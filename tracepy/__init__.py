@@ -18,3 +18,4 @@ from .optplot import spotdiagram, plotobject, rayaberration
 from .iotables import *
 from .transforms import *
 from .raygroup import *
+from.index import *

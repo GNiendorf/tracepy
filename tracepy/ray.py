@@ -36,7 +36,7 @@ class ray:
         self.D = np.array(params['D'])
         self.P_hist = [self.P]
         self.D_hist = [self.D]
-        self.N = N_0
+        self.N = lambda x=0.55: N_0
         if abs(np.linalg.norm(self.D)-1.) > .01:
             #Ray direction cosines are not normalized.
             raise NormalizationError()
@@ -113,7 +113,7 @@ class ray:
 
         """
 
-        mu = self.N/surface.N
+        mu = self.N()/surface.N()
         a = mu*np.dot(self.D, self.normal)/pow(np.linalg.norm(self.normal), 2)
         b = (pow(mu,2)-1)/pow(np.linalg.norm(self.normal), 2)
         if typeof == 'stop':
@@ -188,7 +188,7 @@ class ray:
             return 0.
         #Update direction and index of refraction of the current material.
         self.D = np.array([mu*k+G[1]*K,mu*l+G[1]*L,mu*m+G[1]*M])
-        self.N = surface.N
+        self.N = lambda x=0.55: surface.N()
 
     def ray_lab_frame(self, surface):
         """ Updates position and direction of a ray in the lab frame. """

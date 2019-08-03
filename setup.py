@@ -22,5 +22,7 @@ setup(name='tracepy',
           'pandas',
           'scipy',
           'scikit-learn',
+          'PyYAML'
       ],
+      include_package_data=True,
       )
