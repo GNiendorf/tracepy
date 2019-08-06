@@ -1,0 +1,27 @@
+include tracepy/glass/glass_dict.json
+
+include tracepy/glass/ami/*.yml
+include tracepy/glass/barberini/*.yml
+include tracepy/glass/cdgm/*.yml
+include tracepy/glass/corning/*.yml
+include tracepy/glass/hikari/*.yml
+include tracepy/glass/hoya/*.yml
+include tracepy/glass/lightpath/*.yml
+include tracepy/glass/lzos/*.yml
+include tracepy/glass/misc/*.yml
+include tracepy/glass/nsg/*.yml
+include tracepy/glass/ohara/*.yml
+include tracepy/glass/schott/*.yml
+include tracepy/glass/sumita/*.yml
+include tracepy/glass/vitron/*.yml
+include tracepy/glass/barberini/*.yml
+
+include tracepy/glass/hikari/CaF/*.yml
+include tracepy/glass/hikari/i-line/*.yml
+include tracepy/glass/hikari/SiO2/*.yml
+
+include tracepy/glass/misc/soda-lime/*.yml
+
+include tracepy/glass/schott/infared/*.yml
+include tracepy/glass/schott/misc/*.yml
+include tracepy/glass/schott/obsolete/*.yml

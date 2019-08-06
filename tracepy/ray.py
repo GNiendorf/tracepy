@@ -28,7 +28,8 @@ class ray:
         Previous D np.arrays in a list.
     N : float/int
         Index of refraction of current material.
-
+    wvl: float/int
+        Wavelength of the ray in microns 550nm --> 0.55.
     """
 
     def __init__(self, params, N_0=1):
@@ -37,6 +38,7 @@ class ray:
         self.P_hist = [self.P]
         self.D_hist = [self.D]
         self.N = N_0
+        self.wvl = params.get('wvl',0.55) #Added default wavelength 550nm
         if abs(np.linalg.norm(self.D)-1.) > .01:
             #Ray direction cosines are not normalized.
             raise NormalizationError()
@@ -112,8 +114,10 @@ class ray:
             stop -> Don't change ray direction.
 
         """
-
-        mu = self.N/surface.N
+        if hasattr(surface,'glass'):
+            mu = self.N / surface.glass(self.wvl)
+        else:
+            mu = self.N / surface.N
         a = mu*np.dot(self.D, self.normal)/pow(np.linalg.norm(self.normal), 2)
         b = (pow(mu,2)-1)/pow(np.linalg.norm(self.normal), 2)
         if typeof == 'stop':
@@ -188,7 +192,10 @@ class ray:
             return 0.
         #Update direction and index of refraction of the current material.
         self.D = np.array([mu*k+G[1]*K,mu*l+G[1]*L,mu*m+G[1]*M])
-        self.N = surface.N
+        if hasattr(surface,'glass'):
+            self.N = surface.glass(self.wvl)
+        else:
+            self.N = surface.N
 
     def ray_lab_frame(self, surface):
         """ Updates position and direction of a ray in the lab frame. """
