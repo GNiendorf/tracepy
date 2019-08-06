@@ -62,7 +62,7 @@ class geometry:
         self.name = params.get('name', None)
         self.R = gen_rot(self.D)
         if params.get('glass'):
-            self.glass = glass_index(params.get('glass')) 
+            self.glass = glass_index(params.get('glass'))
         self.check_params()
 
     def __getitem__(self, item):

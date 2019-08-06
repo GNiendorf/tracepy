@@ -1,8 +1,10 @@
-import numpy as np
 import os
-import json
+
 from scipy.optimize import curve_fit
+
+import json
 import yaml
+import numpy as np
 
 def cauchy_two_term(x,B,C):
     '''
@@ -50,10 +52,10 @@ def glass_index (glass):
         glass_dict = eval(json.dumps(json.load(f))) #Solution to dict keys formatting
     glass_catalog = ["schott", "ohara", "sumita", "cdgm", "hoya", "hikari", "vitron", "ami", "barberini", "lightpath", "lzos", "misc", "nsg"]
     #Process input and return glass file:
-    if type(glass) == float: #Allow index to still be set by constant value
+    if isinstance(glass, float): #Allow index to still be set by constant value
         constant_index = float(glass)
         return lambda x=0.55: constant_index
-    elif type(glass) == str: #Input is a glass name
+    elif isinstance(glass, str): #Input is a glass name
         input_list = glass.split(" ")
         glass_name = input_list[0]
         if len(input_list) > 1:
@@ -70,13 +72,13 @@ def glass_index (glass):
                 glass_file = glass_dict[glass_name][glass_catalog[min([glass_catalog.index(x) for x in glass_dict[glass_name].keys()])]]
         else:
             raise Exception("{} is not in the glass catalog.".format(glass_name))
-        
+
         #Process glass file and return the correct function for the glass (wavelength in microns)
         split_path = glass_file.split("\\") #Issue when not working on windows
         if len(split_path) == 4:
-            glass_file_path = os.path.join(os.path.join(split_path[1],split_path[2]),split_path[3]) 
+            glass_file_path = os.path.join(os.path.join(split_path[1],split_path[2]),split_path[3])
         else:
-            glass_file_path = os.path.join(os.path.join(os.path.join(split_path[1],split_path[2]),split_path[3]),split_path[4]) 
+            glass_file_path = os.path.join(os.path.join(os.path.join(split_path[1],split_path[2]),split_path[3]),split_path[4])
         f = yaml.load(open(os.path.join(os.path.dirname(__file__),glass_file_path)), Loader=yaml.BaseLoader)
         type_index_function = f["DATA"][0]["type"]
         if type_index_function == 'formula 1':
