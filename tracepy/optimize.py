@@ -68,11 +68,14 @@ def get_rms(inputs, geoparams, vary_dicts):
 
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
+    ratio_surv = np.sum([1 for ray in raygroup_iter if ray.P is not None])/len(raygroup_iter)
     try:
         rms = spotdiagram(params_iter, raygroup_iter, optimizer=True)
     except TraceError:
         rms = 999.
-    return rms
+    #Weight of failed propagation.
+    surv_const = 100
+    return rms + (1-ratio_surv)*surv_const
 
 def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
     """Optimize a given geometry for a given varylist and return the new geometry.

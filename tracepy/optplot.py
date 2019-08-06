@@ -43,7 +43,11 @@ def _gen_object_points(surface, surface_idx, rays):
     points_obj = transform(surface.R, surface, points)
     #Round arrays to upper bound on accuracy.
     points_obj = np.around(points_obj, 14)
-    X, Y = points_obj[:,0], points_obj[:,1]
+    if points_obj.ndim == 2:
+        X, Y = points_obj[:,0], points_obj[:,1]
+    elif points_obj.ndim == 1:
+        X, Y = points_obj[0], points_obj[1]
+        points_obj = np.array([points_obj])
     return X, Y, points_obj
 
 def spotdiagram(geo_params, rays, pltparams = {'color': 'red'}, optimizer=False):
