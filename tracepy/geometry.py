@@ -32,8 +32,6 @@ class geometry:
         Index of refraction of the material that the rays propagate INTO
         (meaning on the image side). If N is not given then it defaults
         to a value of 1 for air. A constant value can be specified such as 1.72.
-        The glas type can also be specified from the  refractiveindexinfo.com 
-        catalog. Example input: 'F2 schott'
     kappa (optional): float/int
         Defines the type of conic that the surface models.
         If kappa is None then the surface is planar.
@@ -57,12 +55,14 @@ class geometry:
         self.D = np.array(params.get('D', [0., 0., 0.]))
         self.action = params['action']
         self.Diam = params['Diam']
-        self.N = glass_index(params.get('N', 1.)) #Index of refraction   
+        self.N = params.get('N', 1.)
         self.kappa = params.get('kappa', None)
         self.diam = params.get('diam', 0.)
         self.c = params.get('c', 0.)
         self.name = params.get('name', None)
         self.R = gen_rot(self.D)
+        if params.get('glass'):
+            self.glass = glass_index(params.get('glass')) 
         self.check_params()
 
     def __getitem__(self, item):
