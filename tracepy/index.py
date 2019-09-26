@@ -104,29 +104,11 @@ def glass_index (glass):
             raw_data = f["DATA"][0]['data'].split('\n')[:-1]
             wavelength = np.array([float(x.split(' ')[0]) for x in raw_data])
             index = np.array([float(x.split(' ')[1]) for x in raw_data])
-            popt, pcov = curve_fit(cauchy_two_term, wavelength, index) #Curve fit cauchy two term function
+            popt, _ = curve_fit(cauchy_two_term, wavelength, index) #Curve fit cauchy two term function
             return lambda x=0.55: popt[0] + (popt[1]/(x**2))
         if type_index_function == 'tabulated nk':
             raw_data = f["DATA"][0]['data'].split('\n')[:-1]
             wavelength = np.array([float(x.split(' ')[0]) for x in raw_data])
             index = np.array([float(x.split(' ')[1]) for x in raw_data])
-            popt, pcov = curve_fit(cauchy_two_term, wavelength, index) #Curve fit cauchy two term function
+            popt, _ = curve_fit(cauchy_two_term, wavelength, index) #Curve fit cauchy two term function
             return lambda x=0.55: popt[0] + (popt[1]/(x**2)) #Many of these materials are IR glass so the default0.55 is way out of the tabulated range...
-
-
-if __name__ == '__main__':
-    #used as a test to make sure everything in the database returns an index value at 550nm
-    #Load glass dictionary
-    with open(os.path.join(os.path.dirname(__file__),os.path.join("glass","glass_dict.json")),"r") as f:
-        glass_dict = eval(json.dumps(json.load(f))) #Solution to dict keys formatting
-    glass_catalog = ["schott", "ohara", "sumita", "cdgm", "hoya", "hikari", "vitron", "ami", "barberini", "lightpath", "lzos", "misc", "nsg"]
-    fail = 0
-    for item in glass_dict.keys():
-        for builder in glass_dict[item]:
-            try:
-                index = glass_index(item + " " + builder)()
-            except:
-                fail += 1
-                print(item + " " + builder)
-    print(fail)
-

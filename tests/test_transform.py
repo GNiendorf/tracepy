@@ -1,7 +1,6 @@
 import numpy as np
-from pytest import approx
 
-from tracepy import gen_rot, transform, lab_frame
+from tracepy import gen_rot
 
 def test_rot():
     """ Simple rotation matrix cases. """

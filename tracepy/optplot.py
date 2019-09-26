@@ -129,7 +129,7 @@ def rayaberration(geo_params, rays, pltparams= {'color': 'red', 'linewidth': 2})
     start = geometry(geo_params[0])
     stop = geometry(geo_params[-1])
     X_start, Y_start, start_points = _gen_object_points(start, 0, rays)
-    X_stop, Y_stop, stop_points = _gen_object_points(stop, -1, rays)
+    X_stop, Y_stop, _ = _gen_object_points(stop, -1, rays)
     #Chief ray information
     distances = np.sqrt(np.sum((start_points[:,[0,1]] - start_points[:,[0,1]].mean(axis=0))**2, axis=1))
     chief_ray_idx = np.argmin(distances)
