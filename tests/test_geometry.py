@@ -29,8 +29,9 @@ geo_obj = [geometry(surf) for surf in geo]
 
 def test_params():
     """ Read parameters to make sure nothing was changed. """
-    assert geo_obj[0].P == [0., 0., 2.]
-    assert geo_obj[0].D == [0., 0., 2.]
+    print(geo_obj[0].P)
+    assert np.all(geo_obj[0].P == [0., 0., 2.])
+    assert np.all(geo_obj[0].D == [0., 0., 2.])
     assert geo_obj[0].action == 'reflection'
     assert geo_obj[0].Diam == 2.
     assert geo_obj[0].diam == 1.
@@ -39,8 +40,8 @@ def test_params():
     assert geo_obj[0].c == 3.
     assert geo_obj[0].name == 'hello'
 
-    assert geo_obj[1].P == [2., 3., 4.]
-    assert geo_obj[1].D == [0., 0., 0.]
+    assert np.all(geo_obj[1].P == [2., 3., 4.])
+    assert np.all(geo_obj[1].D == [0., 0., 0.])
     assert geo_obj[1].action == 'stop'
     assert geo_obj[1].Diam == 2.
     assert geo_obj[1].kappa == 0.
@@ -49,7 +50,7 @@ def test_params():
 def test_conics():
     """ Check simple function cases. """
     assert geo_obj[1].conics(np.array([0., 0., 0.]))[0] == 0.0
-    assert geo_obj[1].conics(np.array([0., 0., 0.]))[1] == [0., 0., 1.]
+    assert np.all(geo_obj[1].conics(np.array([0., 0., 0.]))[1] == [0., 0., 1.])
 
     assert approx(geo_obj[0].conics(np.array([1., 0., 0.]))[0], 0.00002) == -0.55982
     assert approx(geo_obj[0].conics(np.array([1., 0., 0.]))[1][0], 0.00002) == -0.68825
