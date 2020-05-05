@@ -6,9 +6,9 @@
 
 import numpy as np
 
-from .transforms import *
+from .transforms import gen_rot
 from .exceptions import NotOnSurfaceError
-from .index import *
+from .index import glass_index
 
 class geometry:
     """Class for the different surfaces in an optical system.

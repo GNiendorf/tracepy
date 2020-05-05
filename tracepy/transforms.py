@@ -29,15 +29,15 @@ def gen_rot(ang):
     """
 
     alpha, beta, gamma = ang
-    R_11 = cos(alpha)*cos(gamma)+sin(alpha)*sin(beta)*sin(gamma)
-    R_12 = -cos(beta)*sin(gamma)
-    R_13 = -sin(alpha)*cos(gamma)+cos(alpha)*sin(beta)*sin(gamma)
-    R_21 = cos(alpha)*sin(gamma)-sin(alpha)*sin(beta)*cos(gamma)
-    R_22 = cos(beta)*cos(gamma)
-    R_23 = -sin(alpha)*sin(gamma)-cos(alpha)*sin(beta)*cos(gamma)
-    R_31 = sin(alpha)*cos(beta)
-    R_32 = sin(beta)
-    R_33 = cos(alpha)*cos(beta)
+    R_11 = np.cos(alpha)*np.cos(gamma)+np.sin(alpha)*np.sin(beta)*np.sin(gamma)
+    R_12 = -np.cos(beta)*np.sin(gamma)
+    R_13 = -np.sin(alpha)*np.cos(gamma)+np.cos(alpha)*np.sin(beta)*np.sin(gamma)
+    R_21 = np.cos(alpha)*np.sin(gamma)-np.sin(alpha)*np.sin(beta)*np.cos(gamma)
+    R_22 = np.cos(beta)*np.cos(gamma)
+    R_23 = -np.sin(alpha)*np.sin(gamma)-np.cos(alpha)*np.sin(beta)*np.cos(gamma)
+    R_31 = np.sin(alpha)*np.cos(beta)
+    R_32 = np.sin(beta)
+    R_33 = np.cos(alpha)*np.cos(beta)
     R = np.matrix([[R_11, R_12, R_13],\
                    [R_21, R_22, R_23],\
                    [R_31, R_32, R_33]])

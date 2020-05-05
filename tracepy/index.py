@@ -1,10 +1,9 @@
 import os
-
-from scipy.optimize import curve_fit
-
 import json
 import yaml
+
 import numpy as np
+from scipy.optimize import curve_fit
 
 def cauchy_two_term(x,B,C):
     '''
