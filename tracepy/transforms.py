@@ -5,7 +5,6 @@
 # License: MIT
 
 import numpy as np
-from numpy import cos, sin
 
 def gen_rot(ang):
     """Returns a rotation matrix from 3 rotation angles.
