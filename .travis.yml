@@ -9,14 +9,14 @@ install:
   - source activate tracepyci
   - >-
       conda install --yes
-      numpy>=1.15
-      scipy>=1.2
-      matplotlib>=3.0
+      numpy
+      scipy
+      matplotlib>
       scikit-learn
       pandas
-      pytest=4.2.1
-      pytest-cov=2.6.1
-      coveralls=1.5.1
+      pytest
+      pytest-cov
+      coveralls
   - pip install .
 script:
   - pytest --cov=tracepy tests/
