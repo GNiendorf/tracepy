@@ -22,5 +22,3 @@ script:
   - pytest --cov=tracepy tests/
 notifications:
   email: false
-after_success:
-  - coveralls
