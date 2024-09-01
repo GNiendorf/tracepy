@@ -1,0 +1,34 @@
+name: Python Tests
+
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: 3.7
+
+    - name: Install dependencies
+      shell: bash -l {0}
+      run: |
+        conda create -n tracepyci python=3.7 --yes
+        conda activate tracepyci
+        conda install --yes numpy scipy matplotlib scikit-learn pandas pytest pytest-cov
+        pip install .
+
+    - name: Run tests
+      shell: bash -l {0}
+      run: |
+        conda activate tracepyci
+        pytest tests/
