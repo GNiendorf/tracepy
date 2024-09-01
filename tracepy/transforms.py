@@ -37,7 +37,7 @@ def gen_rot(ang):
     R_31 = np.sin(alpha)*np.cos(beta)
     R_32 = np.sin(beta)
     R_33 = np.cos(alpha)*np.cos(beta)
-    R = np.matrix([[R_11, R_12, R_13],\
+    R = np.array([[R_11, R_12, R_13],\
                    [R_21, R_22, R_23],\
                    [R_31, R_32, R_33]])
     return R
