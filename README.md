@@ -1,7 +1,5 @@
 ## <img alt="TracePy" src="https://user-images.githubusercontent.com/25272611/62305283-dc62a300-b43c-11e9-8436-d88c8555b110.png" height="60">
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/454c6504e63f4accaa9353e7dcfda00e)](https://app.codacy.com/app/gavinniendorf/tracepy?utm_source=github.com&utm_medium=referral&utm_content=GNiendorf/tracepy&utm_campaign=Badge_Grade_Dashboard)
-[![Build Status](https://travis-ci.org/GNiendorf/tracepy.svg?branch=master)](https://travis-ci.org/GNiendorf/tracepy)
 [![Documentation Status](https://readthedocs.org/projects/tracepy/badge/?version=latest)](https://tracepy.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/tracepy.svg)](https://badge.fury.io/py/tracepy)
 
