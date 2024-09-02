@@ -1,9 +1,3 @@
-# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
-#
-# Functions for transforming between reference frames.
-#
-# License: MIT
-
 import numpy as np
 
 def gen_rot(ang):

@@ -1,11 +1,4 @@
-# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
-#
-# Functions for defining groups of rays.
-#
-# License: MIT
-
 import numpy as np
-from numpy import pi, sqrt
 
 from .ray import ray
 from .geometry import geometry
@@ -40,11 +33,11 @@ def ray_plane(geo_params, pos, radius, d, nrays=100):
 
     """
 
-    x_mesh = np.linspace(-radius, radius, int(4./pi*sqrt(nrays)))
-    y_mesh = np.linspace(-radius, radius, int(4./pi*sqrt(nrays)))
+    x_mesh = np.linspace(-radius, radius, int(4./np.pi*np.sqrt(nrays)))
+    y_mesh = np.linspace(-radius, radius, int(4./np.pi*np.sqrt(nrays)))
     x_points, y_points = np.meshgrid(x_mesh, y_mesh)
     xs, ys = x_points.ravel(), y_points.ravel()
-    dis = sqrt(pow(xs,2) + pow(ys, 2))
+    dis = np.sqrt(pow(xs,2) + pow(ys, 2))
     if isinstance(pos, list):
         x_circ, y_circ = xs[dis < radius] + pos[0], ys[dis < radius] + pos[1]
         #To-do: Should transform for d

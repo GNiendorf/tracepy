@@ -1,9 +1,3 @@
-# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
-#
-# Functions for plotting useful features of an optical system.
-#
-# License: MIT
-
 import numpy as np
 
 import matplotlib.pyplot as plt
