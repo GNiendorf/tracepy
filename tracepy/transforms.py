@@ -9,12 +9,6 @@ import numpy as np
 def gen_rot(ang):
     """Returns a rotation matrix from 3 rotation angles.
 
-    Note
-    ----
-    np.matrix is deprecated and needs to be changed to a
-    normal np.array but I remember difficulties with the
-    regular np.array. Needs to be fixed eventually.
-
     Parameters
     ----------
     ang : np.array of length 3
@@ -22,7 +16,7 @@ def gen_rot(ang):
 
     Returns
     -------
-    np.matrix((3,3))
+    np.array((3,3))
         Returns the rotation matrix.
 
     """
