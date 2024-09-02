@@ -3,7 +3,7 @@ import numpy as np
 from .ray import ray
 from .geometry import geometry
 
-def ray_plane(geo_params, pos, radius, d, nrays=100):
+def ray_plane(geo_params, pos, radius, d, nrays=100, wvl=0.55):
     """Creates a plane of rays and propagates them through geometry.
 
     Note
@@ -25,6 +25,8 @@ def ray_plane(geo_params, pos, radius, d, nrays=100):
         Radius of ray plane.
     nrays : int
         Number of rays in the ray plane.
+    wvl: float/int
+        Wavelength of the ray in microns (default 550nm --> 0.55).
 
     Returns
     -------
@@ -49,7 +51,7 @@ def ray_plane(geo_params, pos, radius, d, nrays=100):
     P_arr = np.vstack((x_circ, y_circ, z_circ)).T
     D_arr = np.array([d] *len(x_circ))
     #Initialize rays.
-    rays = [ray(params={'D':D, 'P':P}) for D,P in zip(D_arr, P_arr)]
+    rays = [ray(params={'D':D, 'P':P, 'wvl':wvl}) for D,P in zip(D_arr, P_arr)]
     geo = [geometry(surf) for surf in geo_params]
     #Propagate rays through geometry.
     for rayiter in rays:
