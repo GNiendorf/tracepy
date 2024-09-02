@@ -1,9 +1,3 @@
-# Authors: Gavin Niendorf <gavinniendorf@gmail.com>
-#
-# Functions for saving and loading optics tables.
-#
-# License: MIT
-
 import pandas as pd
 
 def save_optics(geo_params, filename):
