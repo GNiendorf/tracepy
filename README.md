@@ -1,7 +1,7 @@
 ## <img alt="TracePy" src="https://user-images.githubusercontent.com/25272611/62305283-dc62a300-b43c-11e9-8436-d88c8555b110.png" height="60">
 
 [![Documentation Status](https://readthedocs.org/projects/tracepy/badge/?version=latest)](https://tracepy.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://badge.fury.io/py/tracepy.svg)](https://badge.fury.io/py/tracepy)
+[![PyPI version](https://badge.fury.io/py/tracepy.svg?refresh=true)](https://badge.fury.io/py/tracepy)
 
 Ray Tracing and Optical Design in Python
 
