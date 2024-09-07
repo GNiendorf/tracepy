@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .ray import ray
+from .constants import PLOT_ROUNDING_ACC
 from .geometry import geometry
 from .transforms import transform_points
 from .exceptions import TraceError
@@ -40,7 +41,7 @@ def _gen_object_points(surface: geometry,
     points_obj = transform_points(surface.R, surface, points)
 
     # Round arrays to upper bound on accuracy.
-    return np.around(points_obj, 14)
+    return np.around(points_obj, PLOT_ROUNDING_ACC)
 
 def calculate_rms(points: np.ndarray) -> float:
     """Calculates the RMS of the given points.
