@@ -8,17 +8,15 @@ from .exceptions import TraceError
 
 from typing import List, Dict, Tuple
 
-# TODO: Decouple plotting the spot diagram from the RMS calculation used by optimizer.
-# This involves breaking up the three functions below to decouple the two tasks.
 def _gen_object_points(surface: geometry,
                        surface_idx: int,
-                       rays: List[ray]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+                       rays: List[ray]) -> np.ndarray:
     """Transform intersection points into a surfaces' reference frame.
 
     Parameters
     ----------
     surface : geometry object
-        Surface whos reference frame the points will be transformed into.
+        Surface whose reference frame the points will be transformed into.
     surface_idx : int
         Integer corresponding to where the surface is in the propagation
         order. For example, 0 means the surface is the first surface rays
@@ -28,8 +26,6 @@ def _gen_object_points(surface: geometry,
 
     Returns
     -------
-    X, Y : np.array of len(rays)
-        X, Y pair in the surface's reference frame.
     points_obj: 2d np.array
         X, Y pair points in 2d array for easy rms calculation.
 
@@ -39,16 +35,29 @@ def _gen_object_points(surface: geometry,
     if points.size == 0:
         #No rays survived
         raise TraceError()
-    #Get X,Y points in obj. reference frame.
+
+    # Get X,Y points in obj. reference frame.
     points_obj = transform_points(surface.R, surface, points)
-    #Round arrays to upper bound on accuracy.
-    points_obj = np.around(points_obj, 14)
-    if points_obj.ndim == 2:
-        X, Y = points_obj[:,0], points_obj[:,1]
-    elif points_obj.ndim == 1:
-        X, Y = points_obj[0], points_obj[1]
-        points_obj = np.array([points_obj])
-    return X, Y, points_obj
+
+    # Round arrays to upper bound on accuracy.
+    return np.around(points_obj, 14)
+
+def calculate_rms(points: np.ndarray) -> float:
+    """Calculates the RMS of the given points.
+
+    Parameters
+    ----------
+    points : np.ndarray
+        Array of points to calculate RMS for.
+
+    Returns
+    -------
+    float
+        The calculated RMS value.
+
+    """
+
+    return np.std(points[:, [0, 1]] - points[:, [0, 1]].mean(axis=0))
 
 def spot_rms(geo_params: List[Dict], rays: List[ray]) -> float:
     """Calculates the RMS of the spot diagram points.
@@ -68,8 +77,8 @@ def spot_rms(geo_params: List[Dict], rays: List[ray]) -> float:
     """
 
     stop = geometry(geo_params[-1])
-    _, _, points_obj = _gen_object_points(stop, -1, rays)
-    return np.std(points_obj[:, [0, 1]] - points_obj[:, [0, 1]].mean(axis=0))
+    points_obj = _gen_object_points(stop, -1, rays)
+    return calculate_rms(points_obj)
 
 def spotdiagram(geo_params: List[Dict],
                 rays: List[ray],
@@ -88,8 +97,9 @@ def spotdiagram(geo_params: List[Dict],
     """
 
     stop = geometry(geo_params[-1])
-    X, Y, points_obj = _gen_object_points(stop, -1, rays)
-    rms = np.std(points_obj[:, [0, 1]] - points_obj[:, [0, 1]].mean(axis=0))
+    points_obj = _gen_object_points(stop, -1, rays)
+    X, Y = points_obj[:, 0], points_obj[:, 1]
+    rms = calculate_rms(points_obj)
 
     plt.subplot(1, 1, 1, aspect='equal')
     plt.locator_params(axis='x', nbins=8)
