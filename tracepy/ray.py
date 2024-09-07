@@ -3,6 +3,10 @@ import numpy as np
 from .transforms import *
 from .exceptions import NormalizationError, NotOnSurfaceError
 
+from .geometry import geometry
+
+from typing import Union, List, Optional
+
 class ray:
     """Class for rays and their propagation through surfaces.
 
@@ -24,24 +28,27 @@ class ray:
         Index of refraction of current material.
     wvl: float/int
         Wavelength of the ray in microns 550nm --> 0.55.
+    active: int
+        Is the ray still being propagated? 1 if so, else 0 for failed.
     """
 
-    def __init__(self, params, N_0=1):
+    def __init__(self, params: dict, N_0: Union[float, int] = 1):
         self.P = np.array(params['P'])
         self.D = np.array(params['D'])
         self.P_hist = [self.P]
         self.D_hist = [self.D]
         self.N = N_0
         self.wvl = params.get('wvl',0.55) #Added default wavelength 550nm
+        self.active = 1 #Is the ray still active?
         if abs(np.linalg.norm(self.D)-1.) > .01:
             #Ray direction cosines are not normalized.
             raise NormalizationError()
 
-    def transform(self, surface):
+    def transform(self, surface: geometry):
         """ Updates position and direction of a ray to obj coordinate system. """
         self.P, self.D = transform(surface.R, surface, np.array([self.P]), np.array([self.D]))
 
-    def find_intersection(self, surface):
+    def find_intersection(self, surface: geometry):
         """Finds the intersection point of a ray with a surface.
 
         Note
@@ -76,20 +83,20 @@ class ray:
                 func, normal= surface.get_surface([X, Y, Z])
                 deriv = np.dot(normal, self.D)
                 #Newton-raphson method
-                s_j = s_j[1], s_j[1]-func/deriv
+                s_j = [s_j[1], s_j[1]-func/deriv]
             except NotOnSurfaceError:
-                self.P = None
+                self.active = 0
                 return None
             #Error is how far f(X, Y, Z) is from 0.
             error = abs(func)
             n_iter += 1
         if n_iter == n_max or s_0+s_j[0] < 0 or np.dot(([X, Y, Z]-self.P), self.D) < 0.:
-            self.P = None
+            self.active = 0
         else:
             self.normal = normal
             self.P = np.array([X, Y, Z])
 
-    def interact(self, surface, typeof):
+    def interact(self, surface: geometry, typeof: str):
         """Updates new direction of a ray for a given interaction type.
 
         Note
@@ -122,7 +129,7 @@ class ray:
         elif typeof == 'refraction':
             self.refraction(surface, mu, a, b)
 
-    def reflection(self, surface, a):
+    def reflection(self, surface: geometry, a: Union[float, int]):
         """Reflects the ray off a surface and updates the ray's direction.
 
         Note
@@ -143,7 +150,11 @@ class ray:
         K, L, M = self.normal
         self.D = np.array([k-2.*a*K, l-2.*a*L, m-2.*a*M])
 
-    def refraction(self, surface, mu, a, b):
+    def refraction(self,
+                   surface: geometry,
+                   mu: Union[float, int],
+                   a: Union[float, int],
+                   b: Union[float, int]):
         """Simulates refraction of a ray into a surface and updates the ray's direction.
 
         Note
@@ -177,12 +188,12 @@ class ray:
         nmax = 1e5
         while error > 1e-15 and niter < nmax:
             #Newton-raphson method
-            G = G[1], (pow(G[1],2)-b)/(2*(G[1]+a))
+            G = [G[1], (pow(G[1],2)-b)/(2*(G[1]+a))]
             #See Spencer, Murty for where this is inspired by.
             error = abs(pow(G[1],2)+2*a*G[1]+b)
             niter += 1
         if niter==nmax:
-            self.P = None
+            self.active = 0
             return 0.
         #Update direction and index of refraction of the current material.
         self.D = np.array([mu*k+G[1]*K,mu*l+G[1]*L,mu*m+G[1]*M])
@@ -191,7 +202,7 @@ class ray:
         else:
             self.N = surface.N
 
-    def ray_lab_frame(self, surface):
+    def ray_lab_frame(self, surface: geometry):
         """ Updates position and direction of a ray in the lab frame. """
         self.P, self.D = lab_frame(surface.R, surface, np.array([self.P]), np.array([self.D]))
 
@@ -200,15 +211,13 @@ class ray:
         self.P_hist.append(self.P)
         self.D_hist.append(self.D)
 
-    def propagate(self, surfaces):
+    def propagate(self, surfaces: List[geometry]):
         """Propagates a ray through a given surfaces list.
 
         Note
         ----
-        If self.P is None then the ray failed to converge or
+        If self.active is 0 then the ray failed to converge or
         took too many iterations to meet the required accuracy.
-        Note that this is used (self.P is None) as a flag in
-        many other functions in TracePy.
 
         Parameters
         ----------
@@ -221,11 +230,11 @@ class ray:
             self.transform(surface)
             self.find_intersection(surface)
             #Results from failure to converge.
-            if self.P is None:
+            if self.active == 0:
                 break
             self.interact(surface, surface.action)
             #Results from too many iterations.
-            if self.P is None:
+            if self.active == 0:
                 break
             self.ray_lab_frame(surface)
             #Update current to history arrays.

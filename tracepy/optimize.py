@@ -62,7 +62,7 @@ def get_rms(inputs, geoparams, vary_dicts):
 
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
-    ratio_surv = np.sum([1 for ray in raygroup_iter if ray.P is not None])/len(raygroup_iter)
+    ratio_surv = np.sum([1 for ray in raygroup_iter if ray.active != 0])/len(raygroup_iter)
     try:
         rms = spotdiagram(params_iter, raygroup_iter, optimizer=True)
     except TraceError:

@@ -29,7 +29,7 @@ def _gen_object_points(surface, surface_idx, rays):
 
     """
 
-    points = np.array([rayiter.P_hist[surface_idx] for rayiter in rays if rayiter.P is not None])
+    points = np.array([rayiter.P_hist[surface_idx] for rayiter in rays if rayiter.active != 0])
     if points.size == 0:
         #No rays survived
         raise TraceError()

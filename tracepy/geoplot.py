@@ -161,7 +161,7 @@ def plotxz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
 
     """
 
-    rays = np.array([rayiter for rayiter in rays if rayiter.P is not None])
+    rays = np.array([rayiter for rayiter in rays if rayiter.active != 0])
     #Override 1,1,1 subplot if displaying side-by-side.
     if both is None:
         #Keep aspect ratio equal.
@@ -187,7 +187,7 @@ def plotyz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
 
     """
 
-    rays = np.array([rayiter for rayiter in rays if rayiter.P is not None])
+    rays = np.array([rayiter for rayiter in rays if rayiter.active != 0])
     #Override 1,1,1 subplot if displaying side-by-side.
     if both is None:
         #Keep aspect ratio equal.

@@ -1,6 +1,6 @@
 import numpy as np
 
-from .transforms import gen_rot
+from .utils import gen_rot
 from .exceptions import NotOnSurfaceError
 from .index import glass_index
 
