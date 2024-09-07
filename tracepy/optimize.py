@@ -1,11 +1,16 @@
 import numpy as np
 from scipy.optimize import least_squares
 
-from .optplot import spotdiagram
+from .optplot import spot_rms
 from .raygroup import ray_plane
+from .constants import SURV_CONST, MAX_RMS
 from .exceptions import TraceError
 
-def update_geometry(inputs, geoparams, vary_dicts):
+from typing import List, Union, Dict, Optional
+
+def update_geometry(inputs: List[Union[float, int]],
+                    geoparams: List[Dict],
+                    vary_dicts: List[Dict]) -> List[Dict]:
     """Return the geometry requested by the optimization algorithm.
 
     Parameters
@@ -35,7 +40,9 @@ def update_geometry(inputs, geoparams, vary_dicts):
                     vary_idxs += 1
     return geoparams
 
-def get_rms(inputs, geoparams, vary_dicts):
+def get_rms(inputs: List[Union[float, int]],
+            geoparams: List[Dict],
+            vary_dicts: List[Dict]) -> float:
     """Return the rms of an updated geometry.
 
     Note
@@ -62,16 +69,17 @@ def get_rms(inputs, geoparams, vary_dicts):
 
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
     raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
-    ratio_surv = np.sum([1 for ray in raygroup_iter if ray.active != 0])/len(raygroup_iter)
+    ratio_surv = np.sum([1 for ray in raygroup_iter if ray.active])/len(raygroup_iter)
     try:
-        rms = spotdiagram(params_iter, raygroup_iter, optimizer=True)
+        rms = spot_rms(params_iter, raygroup_iter)
     except TraceError:
-        rms = 999.
-    #Weight of failed propagation.
-    surv_const = 100
-    return rms + (1-ratio_surv)*surv_const
+        rms = MAX_RMS
+    return rms + (1 - ratio_surv) * SURV_CONST
 
-def optimize(geoparams, vary_dicts, typeof='least_squares', max_iter=None):
+def optimize(geoparams:List[Dict],
+             vary_dicts: List[Dict],
+             typeof: str = 'least_squares',
+             max_iter: Optional[int] = None) -> List[Dict]:
     """Optimize a given geometry for a given varylist and return the new geometry.
 
     Parameters

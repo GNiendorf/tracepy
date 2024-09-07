@@ -4,6 +4,8 @@ from .utils import gen_rot
 from .exceptions import NotOnSurfaceError
 from .index import glass_index
 
+from typing import Dict, List, Tuple
+
 class geometry:
     """Class for the different surfaces in an optical system.
 
@@ -39,12 +41,12 @@ class geometry:
         If c is 0 then the surface is planar.
     name (optional): str
         Name of the surface, used for optimization
-    R (generated): np.matrix((3,3))
+    R (generated): np.array((3,3))
         Rotation matrix for the surface from rotation angles D.
 
     """
 
-    def __init__(self, params):
+    def __init__(self, params: Dict):
         self.P = params['P']
         self.D = np.array(params.get('D', [0., 0., 0.]))
         self.action = params['action']
@@ -59,15 +61,7 @@ class geometry:
             self.glass = glass_index(params.get('glass'))
         self.check_params()
 
-    def __getitem__(self, item):
-        """ Return attribute of geometry. """
-        return getattr(self, item)
-
-    def __setitem__(self, item, value):
-        """ Set attribute of geometry. """
-        return setattr(self, item, value)
-
-    def check_params(self):
+    def check_params(self) -> None:
         """Check that required parameters are given and update needed parameters.
 
         Summary
@@ -98,15 +92,15 @@ class geometry:
             #Used for planes, does not affect calculations.
             self.kappa = 1.
 
-    def get_surface(self, point):
+    def get_surface(self, point: np.ndarray) -> Tuple[float, List[float]]:
         """ Returns the function and derivitive of a surface for a point. """
         return self.conics(point)
 
-    def get_surface_plot(self, points):
+    def get_surface_plot(self, points: np.ndarray) -> np.ndarray:
         """ Returns the function value for an array of points. """
         return self.conics_plot(points)
 
-    def conics(self, point):
+    def conics(self, point: np.ndarray) -> Tuple[float, List[float]]:
         """Returns function value and derivitive list for conics and sphere surfaces.
 
         Note
@@ -144,7 +138,7 @@ class geometry:
         derivitive = [-X*E, -Y*E, 1.]
         return function, derivitive
 
-    def conics_plot(self, point):
+    def conics_plot(self, point: np.ndarray) -> np.ndarray:
         """Returns Z values for an array of points for plotting conics.
 
         Parameters

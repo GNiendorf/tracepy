@@ -1,12 +1,18 @@
 import numpy as np
-
 import matplotlib.pyplot as plt
 
+from .ray import ray
 from .geometry import geometry
-from .transforms import transform
+from .transforms import transform_points
 from .exceptions import TraceError
 
-def _gen_object_points(surface, surface_idx, rays):
+from typing import List, Dict, Tuple
+
+# TODO: Decouple plotting the spot diagram from the RMS calculation used by optimizer.
+# This involves breaking up the three functions below to decouple the two tasks.
+def _gen_object_points(surface: geometry,
+                       surface_idx: int,
+                       rays: List[ray]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Transform intersection points into a surfaces' reference frame.
 
     Parameters
@@ -29,12 +35,12 @@ def _gen_object_points(surface, surface_idx, rays):
 
     """
 
-    points = np.array([rayiter.P_hist[surface_idx] for rayiter in rays if rayiter.active != 0])
+    points = np.array([rayiter.P_hist[surface_idx] for rayiter in rays if rayiter.active])
     if points.size == 0:
         #No rays survived
         raise TraceError()
     #Get X,Y points in obj. reference frame.
-    points_obj = transform(surface.R, surface, points)
+    points_obj = transform_points(surface.R, surface, points)
     #Round arrays to upper bound on accuracy.
     points_obj = np.around(points_obj, 14)
     if points_obj.ndim == 2:
@@ -44,12 +50,31 @@ def _gen_object_points(surface, surface_idx, rays):
         points_obj = np.array([points_obj])
     return X, Y, points_obj
 
-def spotdiagram(geo_params, rays, pltparams = {'color': 'red'}, optimizer=False):
-    """Plots the transformed intersection points of rays on the stop surface.
+def spot_rms(geo_params: List[Dict], rays: List[ray]) -> float:
+    """Calculates the RMS of the spot diagram points.
 
-    Note
-    ----
-    Directly plots the spot diagram rather than returning something.
+    Parameters
+    ----------
+    geo_params : list of dictionaries
+        Surfaces in order of propagation.
+    rays : list of ray objects
+        Rays that were propagated through the geometry list.
+
+    Returns
+    -------
+    float
+        The calculated RMS value.
+
+    """
+
+    stop = geometry(geo_params[-1])
+    _, _, points_obj = _gen_object_points(stop, -1, rays)
+    return np.std(points_obj[:, [0, 1]] - points_obj[:, [0, 1]].mean(axis=0))
+
+def spotdiagram(geo_params: List[Dict],
+                rays: List[ray],
+                pltparams: Dict = {'color': 'red'}) -> None:
+    """Plots the transformed intersection points of rays on the stop surface.
 
     Parameters
     ----------
@@ -59,24 +84,22 @@ def spotdiagram(geo_params, rays, pltparams = {'color': 'red'}, optimizer=False)
         Rays that were propagated through the geometry list.
     pltparams : dictionary
         Plotting attributes of the spot diagram.
-    optimizer : bool
-        Flag for whether the optimizer is calling the function to get
-        the rms of the spot diagram.
 
     """
 
     stop = geometry(geo_params[-1])
     X, Y, points_obj = _gen_object_points(stop, -1, rays)
-    rms = np.std(points_obj[:,[0,1]] - points_obj[:,[0,1]].mean(axis=0))
-    if optimizer:
-        return rms
-    plt.subplot(1,1,1, aspect='equal')
+    rms = np.std(points_obj[:, [0, 1]] - points_obj[:, [0, 1]].mean(axis=0))
+
+    plt.subplot(1, 1, 1, aspect='equal')
     plt.locator_params(axis='x', nbins=8)
-    plt.ticklabel_format(style='sci', axis='both', scilimits=(0,0))
+    plt.ticklabel_format(style='sci', axis='both', scilimits=(0, 0))
     plt.plot(X, Y, '+', **pltparams)
     plt.text(0.65, 1.015, 'RMS=%.2E' % rms, transform=plt.gca().transAxes)
 
-def plotobject(geo_params, rays, pltparams = {'color': 'blue'}):
+def plotobject(geo_params: List[Dict],
+               rays: List[ray],
+               pltparams: Dict = {'color': 'blue'}) -> None:
     """Plots the initial ray locations in the initial objects' frame.
 
     Note
@@ -102,7 +125,9 @@ def plotobject(geo_params, rays, pltparams = {'color': 'blue'}):
     plt.text(0.65, 1.015, 'RMS=%.2E' % rms, transform=plt.gca().transAxes)
     plt.plot(X, Y, '+', **pltparams)
 
-def rayaberration(geo_params, rays, pltparams= {'color': 'red', 'linewidth': 2}):
+def rayaberration(geo_params: List[Dict],
+                  rays: List[ray],
+                  pltparams: Dict = {'color': 'red', 'linewidth': 2}) -> None:
     """Plots the ray aberration diagrams for an optical system.
 
     Note

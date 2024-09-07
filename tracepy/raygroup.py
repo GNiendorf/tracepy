@@ -10,7 +10,7 @@ def ray_plane(geo_params: List[Dict],
               radius: Union[float, int],
               d: List[float],
               nrays: int = 100,
-              wvl: Union[float, int] = 0.55):
+              wvl: Union[float, int] = 0.55) -> List[ray]:
     """Creates a plane of rays and propagates them through geometry.
 
     Note

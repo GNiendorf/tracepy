@@ -14,9 +14,8 @@ from .ray import ray
 from .geometry import geometry
 from .optimize import optimize
 from .geoplot import plotxz, plotyz, plot2d
-from .optplot import spotdiagram, plotobject, rayaberration
-from .iotables import *
-from .transforms import *
-from .raygroup import *
-from .index import *
+from .optplot import spotdiagram, plotobject, rayaberration, spot_rms
+from .iotables import save_optics
+from .raygroup import ray_plane
+from .index import cauchy_two_term, glass_index
 from .utils import gen_rot
