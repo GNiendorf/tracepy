@@ -1,19 +1,17 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from numpy import pi
 
-from .ray import ray
 from .geometry import geometry
-from .transforms import lab_frame_points
+from .transforms import lab_frame
 
-from typing import List, Dict, Optional
-
-def _gen_points(surfaces: List[geometry]) -> np.ndarray:
+def _gen_points(surfaces):
     """Generates the mesh points for each surface in the obj frame.
 
     Parameters
     ----------
-    surfaces : list of geometry objects
-        List of surfaces whos reference frames to generate the points in.
+    surface : geometry object
+        Surface whos reference frame to generate the points in.
 
     Returns
     -------
@@ -39,14 +37,12 @@ def _gen_points(surfaces: List[geometry]) -> np.ndarray:
         surfpoints.append(meshpoints)
     return np.array(surfpoints)
 
-def _plot_rays(rays: np.ndarray,
-               axes: List[int],
-               pltparams: Dict) -> None:
+def _plot_rays(rays, axes, pltparams):
     """Plots 2d ray history points. Takes list axes to specify axes (0, 1, 2) to plot.
 
     Parameters
     ----------
-    rays : np.array of ray objects
+    rays : list of ray objects
         Rays that are going to be plotted.
     axes : list of length 2 with integers from range [0,2]
         Axes (X, Y, Z) to plot from ray points.
@@ -65,7 +61,7 @@ def _plot_rays(rays: np.ndarray,
         #Plot direction of ray after stop.
         plt.plot([G_p, G_p+I_p],[F_p, F_p+H_p], **pltparams)
 
-def _clip_lens(surfaces: List[geometry], surfpoints: np.ndarray, idx: int) -> np.ndarray:
+def _clip_lens(surfaces, surfpoints, idx):
     """Clips points ouside of a lens intersection point.
 
     Parameters
@@ -93,7 +89,7 @@ def _clip_lens(surfaces: List[geometry], surfpoints: np.ndarray, idx: int) -> np
     surfpoints[idx+1][:,2][clipped_idx] = np.nan
     return surfpoints
 
-def _plot_surfaces(geo_params: List[Dict], axes: List[int]) -> None:
+def _plot_surfaces(geo_params, axes):
     """Plots 2d surface cross sections. Takes list axes to specify axes (0, 1, 2) to plot.
 
     Note
@@ -119,7 +115,7 @@ def _plot_surfaces(geo_params: List[Dict], axes: List[int]) -> None:
         if lens_condition:
             surfpoints = _clip_lens(surfaces, surfpoints, idx)
         with np.errstate(invalid='ignore'):
-            if np.any(np.mod(surf.D/np.pi, 1) != 0) and surf.c == 0 and surf.diam == 0:
+            if np.any(np.mod(surf.D/pi, 1) != 0) and surf.c == 0 and surf.diam == 0:
                     #Find cross section points.
                     cross_idx = abs(surfpoints[idx][:,axes[1]]) == 0
             else:
@@ -127,7 +123,7 @@ def _plot_surfaces(geo_params: List[Dict], axes: List[int]) -> None:
                     cross_idx = abs(surfpoints[idx][:,1-axes[0]]) == 0
         cross_points = surfpoints[idx][cross_idx]
         #Transform to lab frame.
-        points = lab_frame_points(surf.R, surf, cross_points)
+        points = lab_frame(surf.R, surf, cross_points)
         F, G = points[:,axes[0]], points[:,axes[1]]
         #Connect the surfaces in a lens
         if surfaces[idx].action == surfaces[idx-1].action == 'refraction' and start is not None:
@@ -149,17 +145,14 @@ def _plot_surfaces(geo_params: List[Dict], axes: List[int]) -> None:
             end = np.array([F[-1], G[-1]])
         plt.plot(G, F, 'k')
 
-def plotxz(geo_params: List[Dict],
-           ray_list: List[ray],
-           pltparams: Dict = {'c': 'red', 'alpha': 0.3 },
-           both: Optional[bool] = None) -> None:
+def plotxz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
     """Plots the xz coordinates of all rays and surface cross sections.
 
     Parameters
     ----------
     geo_params : list of dictionaries
         Surfaces in propagation order to plot.
-    ray_list : list of ray objects
+    rays : list of ray objects
         Rays that are going to be plotted.
     pltparams : dictionary
         Plot characteristics of rays such as colors and alpha.
@@ -168,7 +161,7 @@ def plotxz(geo_params: List[Dict],
 
     """
 
-    rays = np.array([rayiter for rayiter in ray_list if rayiter.active])
+    rays = np.array([rayiter for rayiter in rays if rayiter.P is not None])
     #Override 1,1,1 subplot if displaying side-by-side.
     if both is None:
         #Keep aspect ratio equal.
@@ -178,17 +171,14 @@ def plotxz(geo_params: List[Dict],
     plt.xlabel("Z")
     plt.ylabel("X")
 
-def plotyz(geo_params: List[Dict],
-           ray_list: List[ray],
-           pltparams: Dict = {'c': 'red', 'alpha': 0.3 },
-           both: Optional[bool] = None) -> None:
+def plotyz(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }, both=None):
     """Plots the yz coordinates of all rays and surface cross sections.
 
     Parameters
     ----------
     geo_params : list of dictionaries
         Surfaces in propagation order to plot.
-    ray_list : list of ray objects
+    rays : list of ray objects
         Rays that are going to be plotted.
     pltparams : dictionary
         Plot characteristics of rays such as colors and alpha.
@@ -197,7 +187,7 @@ def plotyz(geo_params: List[Dict],
 
     """
 
-    rays = np.array([rayiter for rayiter in ray_list if rayiter.active])
+    rays = np.array([rayiter for rayiter in rays if rayiter.P is not None])
     #Override 1,1,1 subplot if displaying side-by-side.
     if both is None:
         #Keep aspect ratio equal.
@@ -207,9 +197,7 @@ def plotyz(geo_params: List[Dict],
     plt.xlabel("Z")
     plt.ylabel("Y")
 
-def plot2d(geo_params: List[Dict],
-           rays: List[ray],
-           pltparams: Dict = {'c': 'red', 'alpha': 0.3 }) -> None:
+def plot2d(geo_params, rays, pltparams={'c': 'red', 'alpha': 0.3 }):
     """Plots both xz and yz side-by-side.
 
     Parameters

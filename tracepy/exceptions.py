@@ -6,6 +6,3 @@ class NotOnSurfaceError(Exception):
 
 class TraceError(Exception):
     """ Custom error for lens systems where no rays survive being traced. """
-
-class InvalidGeometry(Exception):
-    """ Invalid parameters were given to define a geometry object. """

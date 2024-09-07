@@ -1,8 +1,6 @@
 import pandas as pd
 
-# TODO: Rewrite save_optics to iterate over geo_params to handle edge
-#       cases, and convert to dataframe at end before exporting to csv.
-def save_optics(geo_params, filename: str):
+def save_optics(geo_params, filename):
     """Save geometry to an optics table in csv format.
 
     Note
