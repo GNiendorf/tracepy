@@ -27,6 +27,7 @@ def cauchy_two_term(x: float, B: float, C: float) -> float:
     """
     return B + (C / (x ** 2))
 
+# TODO: This function, written by @MikeMork, needs to be broken up into several smaller functions with explicit typing.
 def glass_index(glass):
     '''
     Given a glass name this function will return a function that takes wavelength in microns and returns index of refraction.
