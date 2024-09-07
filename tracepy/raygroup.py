@@ -3,14 +3,7 @@ import numpy as np
 from .ray import ray
 from .geometry import geometry
 
-from typing import Union, List, Dict
-
-def ray_plane(geo_params: List[Dict],
-              pos: Union[List[float], float, int],
-              radius: Union[float, int],
-              d: List[float],
-              nrays: int = 100,
-              wvl: Union[float, int] = 0.55) -> List[ray]:
+def ray_plane(geo_params, pos, radius, d, nrays=100, wvl=0.55):
     """Creates a plane of rays and propagates them through geometry.
 
     Note
