@@ -5,15 +5,30 @@ import yaml
 import numpy as np
 from scipy.optimize import curve_fit
 
-def cauchy_two_term(x,B,C):
-    '''
-    This is a simple two term cauchy for index of refraction as function of wavelength.
+def cauchy_two_term(x: float, B: float, C: float) -> float:
+    """
+    This is a simple two-term Cauchy equation for the index of refraction as a function of wavelength.
     https://en.wikipedia.org/wiki/Cauchy%27s_equation
     It is used to create a function for refractive index database entries when only tabulated data is available.
-    '''
-    return B + (C/(x**2))
+    
+    Parameters
+    ----------
+    x : float
+        Wavelength (in micrometers).
+    B : float
+        First term of the Cauchy equation.
+    C : float
+        Second term of the Cauchy equation.
+        
+    Returns
+    -------
+    float
+        Refractive index at the given wavelength.
+    """
+    return B + (C / (x ** 2))
 
-def glass_index (glass):
+# TODO: This function, written by @MikeMork, needs to be broken up into several smaller functions with explicit typing.
+def glass_index(glass):
     '''
     Given a glass name this function will return a function that takes wavelength in microns and returns index of refraction.
     - All values were taken from refractiveindexinfo's database of different optical glasses.

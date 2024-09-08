@@ -1,8 +1,10 @@
 import numpy as np
 
-from .transforms import gen_rot
-from .exceptions import NotOnSurfaceError
+from .utils import gen_rot
+from .exceptions import NotOnSurfaceError, InvalidGeometry
 from .index import glass_index
+
+from typing import Dict, List, Tuple, Union, Optional
 
 class geometry:
     """Class for the different surfaces in an optical system.
@@ -39,55 +41,48 @@ class geometry:
         If c is 0 then the surface is planar.
     name (optional): str
         Name of the surface, used for optimization
-    R (generated): np.matrix((3,3))
+    R (generated): np.array((3,3))
         Rotation matrix for the surface from rotation angles D.
 
     """
 
-    def __init__(self, params):
-        self.P = params['P']
-        self.D = np.array(params.get('D', [0., 0., 0.]))
-        self.action = params['action']
-        self.Diam = params['Diam']
-        self.N = params.get('N', 1.)
-        self.kappa = params.get('kappa', None)
-        self.diam = params.get('diam', 0.)
-        self.c = params.get('c', 0.)
-        self.name = params.get('name', None)
-        self.R = gen_rot(self.D)
+    def __init__(self, params: Dict):
+        P = params.get('P')
+        # Allow on axis integer for P.
+        if isinstance(P, float) or isinstance(P, int):
+            P = np.array([0., 0., P])
+        elif isinstance(P, List):
+            P = np.array(P)
+        elif not isinstance(P, np.ndarray):
+            raise InvalidGeometry()
+        self.P: np.ndarray = P
+        self.D: np.ndarray = np.array(params.get('D', [0., 0., 0.]))
+        self.action: str = params['action']
+        self.Diam: Union[float, int] = params['Diam']
+        self.N: Union[float, int] = params.get('N', 1.)
+        self.kappa: Optional[Union[float, int]] = params.get('kappa')
+        self.diam: Union[float, int] = params.get('diam', 0.)
+        self.c: Union[float, int] = params.get('c', 0.)
+        self.name: str = params.get('name', None)
+        self.R: np.ndarray = gen_rot(self.D)
         if params.get('glass'):
             self.glass = glass_index(params.get('glass'))
         self.check_params()
 
-    def __getitem__(self, item):
-        """ Return attribute of geometry. """
-        return getattr(self, item)
-
-    def __setitem__(self, item, value):
-        """ Set attribute of geometry. """
-        return setattr(self, item, value)
-
-    def check_params(self):
+    def check_params(self) -> None:
         """Check that required parameters are given and update needed parameters.
 
         Summary
         -------
-            If P is given as a float/int then it is converted to a np array
-            with that float/int in the Z direction. If c != 0 (in the case
-            of a conic) then kappa must be specified, and if kappa is greater
-            than 0 then the value of c is redundant by boundary conditions of
-            the conic equation. Lastly, if c == 0 in the case of a planar
-            surface the None value of kappa needs to be set to a dummy value
-            to avoid exceptions in calculating the conic equation. Note that
-            this does not affect the calculation since c is 0.
+            If c != 0 (in the case of a conic) then kappa must be specified,
+            and if kappa is greater than 0 then the value of c is redundant
+            by boundary conditions of the conic equation. Lastly, if c == 0 in
+            the case of a planar surface the None value of kappa needs to be set
+            to a dummy value to avoid exceptions in calculating the conic equation.
+            Note that this does not affect the calculation since c is 0.
 
         """
 
-        if isinstance(self.P, float) or isinstance(self.P, int):
-            #Allow on axis integer for P.
-            self.P = np.array([0., 0., self.P])
-        else:
-            self.P = np.array(self.P)
         if self.c != 0:
             if self.kappa is None:
                 raise Exception("Specify a kappa for this conic.")
@@ -98,15 +93,15 @@ class geometry:
             #Used for planes, does not affect calculations.
             self.kappa = 1.
 
-    def get_surface(self, point):
+    def get_surface(self, point: np.ndarray) -> Tuple[float, List[float]]:
         """ Returns the function and derivitive of a surface for a point. """
         return self.conics(point)
 
-    def get_surface_plot(self, points):
+    def get_surface_plot(self, points: np.ndarray) -> np.ndarray:
         """ Returns the function value for an array of points. """
         return self.conics_plot(points)
 
-    def conics(self, point):
+    def conics(self, point: np.ndarray) -> Tuple[float, List[float]]:
         """Returns function value and derivitive list for conics and sphere surfaces.
 
         Note
@@ -137,6 +132,9 @@ class geometry:
         rho = np.sqrt(pow(X,2) + pow(Y, 2))
         if rho > self.Diam/2. or rho < self.diam/2.:
             raise NotOnSurfaceError()
+        # Ensure kappa is not None before using it in calculations
+        if self.kappa is None:
+            raise ValueError("kappa must not be None for conic calculations")
         #Conic equation.
         function = Z - self.c*pow(rho, 2)/(1 + pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5))
         #See Spencer, Murty section on rotational surfaces for definition of E.
@@ -144,7 +142,7 @@ class geometry:
         derivitive = [-X*E, -Y*E, 1.]
         return function, derivitive
 
-    def conics_plot(self, point):
+    def conics_plot(self, point: np.ndarray) -> np.ndarray:
         """Returns Z values for an array of points for plotting conics.
 
         Parameters
@@ -166,5 +164,8 @@ class geometry:
         nan_idx = (rho > self.Diam/2.) + (rho < self.diam/2.)
         rho = np.sqrt(pow(X[~nan_idx],2) + pow(Y[~nan_idx], 2))
         function[nan_idx] = np.nan
+        # Ensure kappa is not None before using it in calculations
+        if self.kappa is None:
+            raise ValueError("kappa must not be None for conic plot calculations")
         function[~nan_idx] = self.c*pow(rho, 2)/(1 + pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5))
         return function
