@@ -33,9 +33,9 @@ class geometry:
         If kappa is None then the surface is planar.
         kappa < 0 -> hyperboloid
         kappa = 0 -> paraboloid
-        0 < kappa < 1 -> hemelipsoid of revolution about major axis
+        0 < kappa < 1 -> helioid of revolution about major axis
         kappa = 1 -> hemisphere
-        kappa > 1 -> hemelipsoid of revolution about minor axis
+        kappa > 1 -> helioid of revolution about minor axis
     c (optional): float/int
         Vertex curvature of the surface.
         If c is 0 then the surface is planar.
@@ -82,27 +82,42 @@ class geometry:
             Note that this does not affect the calculation since c is 0.
 
         """
-
         if self.c != 0:
             if self.kappa is None:
                 raise Exception("Specify a kappa for this conic.")
-            elif self.kappa>0:
+            elif self.kappa > 0:
                 print("Warning: Specified c value is not used when kappa>0")
-                self.c = np.sqrt(1/(self.kappa*pow(self.Diam/2.,2)))
+                self.c = np.sqrt(1 / (self.kappa * pow(self.Diam / 2., 2)))
         elif self.c == 0 and self.kappa is None:
-            #Used for planes, does not affect calculations.
+            # Used for planes, does not affect calculations.
             self.kappa = 1.
 
     def get_surface(self, point: np.ndarray) -> Tuple[float, List[float]]:
-        """ Returns the function and derivitive of a surface for a point. """
+        """ Returns the function and derivative of a surface for a point. """
         return self.conics(point)
 
     def get_surface_plot(self, points: np.ndarray) -> np.ndarray:
         """ Returns the function value for an array of points. """
         return self.conics_plot(points)
 
+    def get_surface_vector(self, points: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Returns function values and derivative vectors for an array of points.
+
+        Parameters
+        ----------
+        points : np.ndarray of shape (N,3)
+            Array of points.
+        Returns
+        -------
+        func : np.ndarray of shape (N,)
+            Function values.
+        deriv : np.ndarray of shape (N,3)
+            Derivative vectors.
+        """
+        return self.conics_vector(points)
+
     def conics(self, point: np.ndarray) -> Tuple[float, List[float]]:
-        """Returns function value and derivitive list for conics and sphere surfaces.
+        """Returns function value and derivative list for conics and sphere surfaces.
 
         Note
         ----
@@ -122,25 +137,58 @@ class geometry:
         function : float
             Function value of the surface. A value of 0 corresponds to the ray intersecting
             the surface.
-        derivitive : list of length 3
-            Function derivitive of the surface at the point given. Used to determine which
-            direction the ray needs to travel in and the step size to intersect the surface.
-
+        derivative : list of length 3
+            Derivative of the surface at the point given.
         """
-
-        X,Y,Z = point
-        rho = np.sqrt(pow(X,2) + pow(Y, 2))
-        if rho > self.Diam/2. or rho < self.diam/2.:
+        X, Y, Z = point
+        rho = np.sqrt(pow(X, 2) + pow(Y, 2))
+        if rho > self.Diam / 2. or rho < self.diam / 2.:
             raise NotOnSurfaceError()
-        # Ensure kappa is not None before using it in calculations
         if self.kappa is None:
             raise ValueError("kappa must not be None for conic calculations")
-        #Conic equation.
-        function = Z - self.c*pow(rho, 2)/(1 + pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5))
-        #See Spencer, Murty section on rotational surfaces for definition of E.
-        E = self.c / pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5)
-        derivitive = [-X*E, -Y*E, 1.]
-        return function, derivitive
+        function = Z - self.c * pow(rho, 2) / (1 + pow((1 - self.kappa * pow(self.c, 2) * pow(rho, 2)), 0.5))
+        E = self.c / pow((1 - self.kappa * pow(self.c, 2) * pow(rho, 2)), 0.5)
+        derivative = [-X * E, -Y * E, 1.]
+        return function, derivative
+
+    def conics_vector(self, points: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Returns function values and derivative vectors for conics and sphere surfaces.
+        
+        Vectorized version for an array of points.
+        
+        Parameters
+        ----------
+        points : np.ndarray of shape (N,3)
+            Array of points (X, Y, Z).
+        
+        Returns
+        -------
+        func : np.ndarray of shape (N,)
+            Function values for each point.
+        deriv : np.ndarray of shape (N,3)
+            Derivative vectors for each point.
+        """
+        X = points[:, 0]
+        Y = points[:, 1]
+        Z = points[:, 2]
+        rho = np.sqrt(X**2 + Y**2)
+        # Initialize outputs
+        func = np.full(points.shape[0], np.nan)
+        deriv = np.full((points.shape[0], 3), np.nan)
+        # Determine valid indices based on aperture
+        valid = (rho <= self.Diam / 2.) & (rho >= self.diam / 2.)
+        if self.kappa is None:
+            raise ValueError("kappa must not be None for conic calculations")
+        # Calculate for valid points
+        rho_valid = rho[valid]
+        sqrt_term = np.sqrt(1 - self.kappa * self.c**2 * rho_valid**2)
+        denom = 1 + sqrt_term
+        func[valid] = Z[valid] - self.c * rho_valid**2 / denom
+        E = self.c / sqrt_term
+        deriv[valid, 0] = -X[valid] * E
+        deriv[valid, 1] = -Y[valid] * E
+        deriv[valid, 2] = 1.
+        return func, deriv
 
     def conics_plot(self, point: np.ndarray) -> np.ndarray:
         """Returns Z values for an array of points for plotting conics.
@@ -154,18 +202,14 @@ class geometry:
         -------
         function : 1d np.array
             np.array of Z values for each X,Y pair.
-
         """
-
-        X, Y = point[:,0], point[:,1]
-        rho = np.sqrt(pow(X,2) + pow(Y,2))
-        #Initialize Z value array
+        X, Y = point[:, 0], point[:, 1]
+        rho = np.sqrt(pow(X, 2) + pow(Y, 2))
         function = np.zeros(len(point))
-        nan_idx = (rho > self.Diam/2.) + (rho < self.diam/2.)
-        rho = np.sqrt(pow(X[~nan_idx],2) + pow(Y[~nan_idx], 2))
+        nan_idx = (rho > self.Diam / 2.) + (rho < self.diam / 2.)
+        rho = np.sqrt(pow(X[~nan_idx], 2) + pow(Y[~nan_idx], 2))
         function[nan_idx] = np.nan
-        # Ensure kappa is not None before using it in calculations
         if self.kappa is None:
             raise ValueError("kappa must not be None for conic plot calculations")
-        function[~nan_idx] = self.c*pow(rho, 2)/(1 + pow((1-self.kappa*pow(self.c, 2)*pow(rho,2)), 0.5))
+        function[~nan_idx] = self.c * pow(rho, 2) / (1 + pow((1 - self.kappa * pow(self.c, 2) * pow(rho, 2)), 0.5))
         return function

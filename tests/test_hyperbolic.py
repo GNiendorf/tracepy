@@ -23,7 +23,6 @@ stop = {
 
 def test_rms_hyperbolic():
     geo = [back_lens, lens, stop]
-    ray_group = tp.ray_plane(geo, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=100)
+    ray_group = tp.ray_plane(geo, [0., 0., 0.], 1.1, d=[0., 0., 1.], nrays=100)
     rms = tp.spot_rms(geo, ray_group)
     assert rms == 0.
-

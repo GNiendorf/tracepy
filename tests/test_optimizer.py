@@ -5,8 +5,8 @@ lens = {
     'name': 'lens',
     'action': 'refraction',
     'P': 2.,
-    'kappa': -.004,
-    'c': -.5,
+    'kappa': -0.004,
+    'c': -0.5,
     'Diam': 2.2
 }
 
@@ -14,8 +14,8 @@ back_lens = {
     'name': 'back_lens',
     'action': 'refraction',
     'P': 1.,
-    'c': .5,
-    'kappa': -.004,
+    'c': 0.5,
+    'kappa': -0.004,
     'N': 1.5,
     'Diam': 2.2
 }
@@ -61,5 +61,3 @@ def test_optimizer():
         tp.rayaberration(geo_1, ray_group_3)
     except Exception as e:
         assert False, f"rayaberration raised an exception: {e}"
-
-

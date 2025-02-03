@@ -61,68 +61,87 @@ def glass_index(glass):
 
     The functions that this function returns take a wavelength in microns and return the index of refractive index.
     '''
-    #Load glass dictionary
-    with open(os.path.join(os.path.dirname(__file__),os.path.join("glass","glass_dict.json")),"r") as f:
-        glass_dict = eval(json.dumps(json.load(f))) #Solution to dict keys formatting
-    glass_catalog = ["schott", "ohara", "sumita", "cdgm", "hoya", "hikari", "vitron", "ami", "barberini", "lightpath", "lzos", "misc", "nsg"]
-    #Process input and return glass file:
-    if isinstance(glass, float): #Allow index to still be set by constant value
+    # Load glass dictionary
+    with open(os.path.join(os.path.dirname(__file__), "glass", "glass_dict.json"), "r") as f:
+        glass_dict = json.load(f)
+    glass_catalog = ["schott", "ohara", "sumita", "cdgm", "hoya", "hikari",
+                     "vitron", "ami", "barberini", "lightpath", "lzos", "misc", "nsg"]
+
+    # Process input and return glass file:
+    if isinstance(glass, (float, int)):
         constant_index = float(glass)
-        return lambda x=0.55: constant_index
-    elif isinstance(glass, str): #Input is a glass name
-        input_list = glass.split(" ")
+        return lambda x=0.55: constant_index  # scalar; broadcasting works fine
+    elif isinstance(glass, str):
+        input_list = glass.split()
         glass_name = input_list[0]
-        if len(input_list) > 1:
-            glass_manufacturer = input_list[1].lower()
-        else:
-            glass_manufacturer = None
+        glass_manufacturer = input_list[1].lower() if len(input_list) > 1 else None
+
         if glass_name in glass_dict:
             if glass_manufacturer:
-                if glass_manufacturer in glass_dict[glass_name].keys():
+                if glass_manufacturer in glass_dict[glass_name]:
                     glass_file = glass_dict[glass_name][glass_manufacturer]
                 else:
-                    raise Exception("{} is not in the glass catalog for {}.".format(glass_name,glass_manufacturer))
+                    raise Exception(f"{glass_name} is not in the glass catalog for {glass_manufacturer}.")
             else:
-                glass_file = glass_dict[glass_name][glass_catalog[min([glass_catalog.index(x) for x in glass_dict[glass_name].keys()])]]
+                available = list(glass_dict[glass_name].keys())
+                # choose based on the defined priority order
+                priority = sorted(available, key=lambda x: glass_catalog.index(x) if x in glass_catalog else np.inf)
+                glass_file = glass_dict[glass_name][priority[0]]
         else:
-            raise Exception("{} is not in the glass catalog.".format(glass_name))
+            raise Exception(f"{glass_name} is not in the glass catalog.")
 
-        #Process glass file and return the correct function for the glass (wavelength in microns)
-        split_path = glass_file.split("\\") #Issue when not working on windows
+        # Process glass file and return the correct function (wavelength in microns)
+        split_path = glass_file.split("\\")
         if len(split_path) == 4:
-            glass_file_path = os.path.join(os.path.join(split_path[1],split_path[2]),split_path[3])
+            glass_file_path = os.path.join(split_path[1], split_path[2], split_path[3])
         else:
-            glass_file_path = os.path.join(os.path.join(os.path.join(split_path[1],split_path[2]),split_path[3]),split_path[4])
-        f = yaml.load(open(os.path.join(os.path.dirname(__file__),glass_file_path)), Loader=yaml.BaseLoader)
+            glass_file_path = os.path.join(split_path[1], split_path[2], split_path[3], split_path[4])
+        f = yaml.load(open(os.path.join(os.path.dirname(__file__), glass_file_path)), Loader=yaml.BaseLoader)
         type_index_function = f["DATA"][0]["type"]
+        
+        # Use np.asarray(x) so that the operations are vectorized
         if type_index_function == 'formula 1':
-            coefficents = f["DATA"][0]['coefficients'].split(" ")
-            coefficents = [float(x) for x in coefficents]
-            return lambda x=0.55: (1+coefficents[0]+coefficents[1]/(1-(coefficents[2]/x)**2)+coefficents[3]/(1-(coefficents[4]/x)**2))**.5
-        if type_index_function == 'formula 2':
-            coefficents = f["DATA"][0]['coefficients'].split(" ")
-            coefficents = [float(x) for x in coefficents]
-            if len(coefficents) >=7:
-                return lambda x=0.55: (1+coefficents[1]/(1-coefficents[2]/x**2)+coefficents[3]/(1-coefficents[4]/x**2)+coefficents[5]/(1-coefficents[6]/x**2))**.5
+            coeffs = [float(x) for x in f["DATA"][0]['coefficients'].split()]
+            return lambda x=0.55: np.sqrt(
+                1 + coeffs[0] +
+                coeffs[1] / (1 - (coeffs[2] / np.asarray(x))**2) +
+                coeffs[3] / (1 - (coeffs[4] / np.asarray(x))**2)
+            )
+        elif type_index_function == 'formula 2':
+            coeffs = [float(x) for x in f["DATA"][0]['coefficients'].split()]
+            if len(coeffs) >= 7:
+                return lambda x=0.55: np.sqrt(
+                    1 +
+                    coeffs[1] / (1 - coeffs[2] / np.asarray(x)**2) +
+                    coeffs[3] / (1 - coeffs[4] / np.asarray(x)**2) +
+                    coeffs[5] / (1 - coeffs[6] / np.asarray(x)**2)
+                )
             else:
-                return lambda x=0.55: (1+coefficents[1]/(1-coefficents[2]/x**2)+coefficents[3]/(1-coefficents[4]/x**2))**.5
-        if type_index_function == 'formula 3':
-            coefficents = f["DATA"][0]['coefficients'].split(" ")
-            coefficents = [float(x) for x in coefficents]
-            return lambda x=0.55: (coefficents[0]-coefficents[1]*x**coefficents[2]+coefficents[3]*x**coefficents[4]+coefficents[5]*x**coefficents[6]+coefficents[7]*x**coefficents[8]+coefficents[9]*x**coefficents[10])**.5
-        if type_index_function == 'formula 5':
-            coefficents = f["DATA"][0]['coefficients'].split(" ")
-            coefficents = [float(x) for x in coefficents]
-            return lambda x=0.55: coefficents[0]-coefficents[1]*x**coefficents[2]+coefficents[3]*x**-coefficents[4]
-        if type_index_function == 'tabulated n':
-            raw_data = f["DATA"][0]['data'].split('\n')[:-1]
-            wavelength = np.array([float(x.split(' ')[0]) for x in raw_data])
-            index = np.array([float(x.split(' ')[1]) for x in raw_data])
-            popt, _ = curve_fit(cauchy_two_term, wavelength, index) #Curve fit cauchy two term function
-            return lambda x=0.55: popt[0] + (popt[1]/(x**2))
-        if type_index_function == 'tabulated nk':
-            raw_data = f["DATA"][0]['data'].split('\n')[:-1]
-            wavelength = np.array([float(x.split(' ')[0]) for x in raw_data])
-            index = np.array([float(x.split(' ')[1]) for x in raw_data])
-            popt, _ = curve_fit(cauchy_two_term, wavelength, index) #Curve fit cauchy two term function
-            return lambda x=0.55: popt[0] + (popt[1]/(x**2)) #Many of these materials are IR glass so the default0.55 is way out of the tabulated range...
+                return lambda x=0.55: np.sqrt(
+                    1 +
+                    coeffs[1] / (1 - coeffs[2] / np.asarray(x)**2) +
+                    coeffs[3] / (1 - coeffs[4] / np.asarray(x)**2)
+                )
+        elif type_index_function == 'formula 3':
+            coeffs = [float(x) for x in f["DATA"][0]['coefficients'].split()]
+            return lambda x=0.55: np.sqrt(
+                coeffs[0] -
+                coeffs[1] * np.asarray(x)**coeffs[2] +
+                coeffs[3] * np.asarray(x)**coeffs[4] +
+                coeffs[5] * np.asarray(x)**coeffs[6] +
+                coeffs[7] * np.asarray(x)**coeffs[8] +
+                coeffs[9] * np.asarray(x)**coeffs[10]
+            )
+        elif type_index_function == 'formula 5':
+            coeffs = [float(x) for x in f["DATA"][0]['coefficients'].split()]
+            return lambda x=0.55: (coeffs[0] -
+                                     coeffs[1] * np.asarray(x)**coeffs[2] +
+                                     coeffs[3] * np.asarray(x)**(-coeffs[4]))
+        elif type_index_function in ['tabulated n', 'tabulated nk']:
+            raw_data = f["DATA"][0]['data'].strip().split('\n')
+            wavelength = np.array([float(line.split()[0]) for line in raw_data])
+            index = np.array([float(line.split()[1]) for line in raw_data])
+            popt, _ = curve_fit(cauchy_two_term, wavelength, index)
+            return lambda x=0.55: popt[0] + popt[1] / (np.asarray(x)**2)
+    else:
+        raise TypeError("Glass must be either a float/int or a string.")

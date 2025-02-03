@@ -28,11 +28,11 @@ stop = {
     'action': 'stop',
     'P': np.array([0., -4.6, 2.]),
     'D': np.array([0., np.pi/2., 0.]),
-    'Diam': .8
+    'Diam': 0.8
 }
 
 lensy = -4.
-thickness = .1
+thickness = 0.1
 
 lens1 = {
     'action': 'refraction',
@@ -40,7 +40,7 @@ lens1 = {
     'D': np.array([0., 3*np.pi/2., 0.]),
     'Diam': 0.8,
     'kappa': 0.,
-    'glass': 'ZF4 cdgm',  # Modified with glass
+    'glass': 'ZF4 cdgm',
     'c': 0.3
 }
 
@@ -55,7 +55,7 @@ lens2 = {
 
 def test_plotting_functions():
     geo = [selector, mirror, small_mirror, lens1, lens2, stop]
-    ray_group = tp.ray_plane(geo, [0., 0., 0.], 1.8, d=[0., 0., 1.], nrays=50, wvl=.55)
+    ray_group = tp.ray_plane(geo, [0., 0., 0.], 1.8, d=[0., 0., 1.], nrays=50, wvl=0.55)
 
     # Test plotyz
     try:
@@ -80,4 +80,3 @@ def test_plotting_functions():
         tp.plotobject(geo, ray_group)
     except Exception as e:
         assert False, f"plotobject raised an exception: {e}"
-
