@@ -39,9 +39,9 @@ class RayGroup:
         N_rays = self.P.shape[0]
         # If wvl is a scalar, replicate for all rays.
         if np.isscalar(wvl):
-            self.wvl = np.full(N_rays, wvl)
+            self.wvl = np.full(N_rays, wvl, dtype=np.float64)
         else:
-            self.wvl = np.array(wvl)
+            self.wvl = np.asarray(wvl, dtype=np.float64)  # type: ignore
         self.N = np.full(N_rays, N_0)
         self.active = np.ones(N_rays, dtype=bool)
         # Check that all direction vectors are normalized.
