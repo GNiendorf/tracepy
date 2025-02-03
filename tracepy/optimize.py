@@ -43,12 +43,11 @@ def update_geometry(inputs: List[Union[float, int]],
 def get_rms(inputs: List[Union[float, int]],
             geoparams: List[Dict],
             vary_dicts: List[Dict]) -> float:
-    """Return the rms of an updated geometry.
+    """Return the RMS of an updated geometry.
 
     Note
     ----
-    If no rays survive then a large rms value is chosen
-    so that the optimizer is discouraged from looking
+    If no rays survive then a large RMS value is chosen so that the optimizer is discouraged from looking
     there.
 
     Parameters
@@ -64,14 +63,13 @@ def get_rms(inputs: List[Union[float, int]],
     -------
     rms : float
         RMS of the spotdiagram.
-
     """
-
     params_iter = update_geometry(inputs, geoparams, vary_dicts)
-    raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0.,0.,1.], nrays=50)
-    ratio_surv = np.sum([1 for ray in raygroup_iter if ray.active])/len(raygroup_iter)
+    raygroup_iter = ray_plane(params_iter, [0., 0., 0.], 1.1, d=[0., 0., 1.], nrays=50)
+    rays_list = raygroup_iter.to_ray_list()
+    ratio_surv = np.sum([1 for ray in rays_list if ray.active]) / len(rays_list)
     try:
-        rms = spot_rms(params_iter, raygroup_iter)
+        rms = spot_rms(params_iter, rays_list)
     except TraceError:
         rms = MAX_RMS
     return rms + (1 - ratio_surv) * SURV_CONST

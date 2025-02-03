@@ -7,10 +7,9 @@ in Python for designing optical systems in the geometric
 optics regime. It features lens optimization from Scipy.
 TracePy is currently in active development and any collaborators
 would be welcome.
-
 """
 
-from .ray import ray
+from .ray import RayGroup
 from .geometry import geometry
 from .optimize import optimize
 from .geoplot import plotxz, plotyz, plot2d

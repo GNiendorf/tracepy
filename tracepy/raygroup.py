@@ -1,6 +1,6 @@
 import numpy as np
 
-from .ray import ray
+from .ray import RayGroup
 from .geometry import geometry
 
 from typing import Union, List, Dict
@@ -10,20 +10,18 @@ def ray_plane(geo_params: List[Dict],
               radius: Union[float, int],
               d: List[float],
               nrays: int = 100,
-              wvl: Union[float, int] = 0.55) -> List[ray]:
+              wvl: Union[float, int] = 0.55) -> RayGroup:
     """Creates a plane of rays and propagates them through geometry.
 
     Note
     ----
-    This is done by creating a square grid with side length 2 x radius
-    and then chopping off all points outside of a radius. But this means
-    the number of rays is significantly less than the parameter nrays in
-    some cases. This needs to be fixed eventually.
+    This is done by creating a square grid with side length 2*radius
+    and then selecting only those points within the circle of given radius.
 
     Parameters
     ----------
     geo_params : list of dictionaries
-        Dictionaries correspond to surfaces.
+        Dictionaries corresponding to surfaces.
     pos : list of length 3 or float/int
         X, Y, and Z values of the plane or just the Z value.
     d : list of length 3
@@ -31,36 +29,40 @@ def ray_plane(geo_params: List[Dict],
     radius : float/int
         Radius of ray plane.
     nrays : int
-        Number of rays in the ray plane.
+        Approximate number of rays in the ray plane.
     wvl: float/int
-        Wavelength of the ray in microns (default 550nm --> 0.55).
+        Wavelength of the rays in microns.
 
     Returns
     -------
-    list of ray objects
-        Returns rays after propagating them through geometry list.
-
+    RayGroup
+        RayGroup object after propagation through the geometry.
     """
-
-    x_mesh = np.linspace(-radius, radius, int(4./np.pi*np.sqrt(nrays)))
-    y_mesh = np.linspace(-radius, radius, int(4./np.pi*np.sqrt(nrays)))
-    x_points, y_points = np.meshgrid(x_mesh, y_mesh)
-    xs, ys = x_points.ravel(), y_points.ravel()
-    dis = np.sqrt(pow(xs,2) + pow(ys, 2))
+    # Create a square grid and select points within a circle of given radius.
+    grid_size = int(4./np.pi*np.sqrt(nrays))  
+    x_vals = np.linspace(-radius, radius, grid_size)
+    y_vals = np.linspace(-radius, radius, grid_size)
+    x_mesh, y_mesh = np.meshgrid(x_vals, y_vals)
+    xs = x_mesh.ravel()
+    ys = y_mesh.ravel()
+    dis = np.sqrt(xs**2 + ys**2)
+    mask = dis < radius
+    xs = xs[mask]
+    ys = ys[mask]
     if isinstance(pos, list):
-        x_circ, y_circ = xs[dis < radius] + pos[0], ys[dis < radius] + pos[1]
-        #To-do: Should transform for d
-        z_circ = [pos[2]]*len(x_circ)
+        x_circ = xs + pos[0]
+        y_circ = ys + pos[1]
+        z_circ = np.full(xs.shape, pos[2])
     else:
-        x_circ, y_circ = xs[dis < radius], ys[dis < radius]
-        #To-do: Should transform for d
-        z_circ = [pos]*len(x_circ)
+        x_circ = xs
+        y_circ = ys
+        z_circ = np.full(xs.shape, pos)
     P_arr = np.vstack((x_circ, y_circ, z_circ)).T
-    D_arr = np.array([d] *len(x_circ))
-    #Initialize rays.
-    rays = [ray(params={'D':D, 'P':P, 'wvl':wvl}) for D,P in zip(D_arr, P_arr)]
-    geo = [geometry(surf) for surf in geo_params]
-    #Propagate rays through geometry.
-    for rayiter in rays:
-        rayiter.propagate(geo)
-    return rays
+    D_arr = np.tile(d, (P_arr.shape[0], 1))
+    # Initialize ray group.
+    raygroup = RayGroup(P_arr, D_arr, wvl=wvl)
+    # Convert geometry dictionaries to geometry objects.
+    geo_list = [geometry(surf) for surf in geo_params]
+    # Propagate rays through geometry.
+    raygroup.propagate(geo_list)
+    return raygroup
